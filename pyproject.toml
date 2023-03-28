@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.8"
 meilisearch-python-async = "1.0.0"
 textual = "0.16.0"
+uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
 aiohttp = "3.8.4"
@@ -27,6 +28,9 @@ tox = "4.4.8"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+meilisearch = "meilisearch_tui.__main__:main"
 
 [tool.black]
 line-length = 100
@@ -60,6 +64,10 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--cov=meilisearch_tui --cov-report term-missing"
+asyncio_mode = "auto"
+
+[tool.coverage.report]
+exclude_lines = ["if __name__ == .__main__.:", "pragma: no cover"]
 
 [tool.ruff]
 select = ["E", "F", "T201", "T203", "I001"]
