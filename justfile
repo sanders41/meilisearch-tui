@@ -26,3 +26,9 @@
 
 @stop-meilisearch:
   docker compose down
+
+@dev-cli:
+  textual console
+
+@dev:
+  textual run --dev meilisearch_tui/__main__.py
