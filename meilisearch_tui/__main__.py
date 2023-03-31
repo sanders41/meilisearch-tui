@@ -4,7 +4,11 @@ from sys import platform
 
 from textual.app import App
 
-from meilisearch_tui.screens.connection_info import ConnectionInfo
+from meilisearch_tui.config import Theme, config
+from meilisearch_tui.screens.configuration import ConfigurationScreen
+from meilisearch_tui.screens.data_load import DataLoadScreen
+from meilisearch_tui.screens.index import AddIndexScreen
+from meilisearch_tui.screens.search import SearchScreen
 
 
 def _is_uvloop_platform() -> bool:  # pragma: no cover
@@ -14,26 +18,36 @@ def _is_uvloop_platform() -> bool:  # pragma: no cover
 
 
 class MeilisearchApp(App):
+    BINDINGS = [
+        ("ctrl+c", "quit", "Quit"),
+        ("s", "push_screen('search')", "Search"),
+        ("d", "push_screen('data_load')", "Load Data"),
+        ("a", "push_screen('add_index')", "Add Index"),
+        ("c", "push_screen('configuration')", "Configuration"),
+    ]
+    CSS_PATH = "meilisearch.css"
     TITLE = "Meilisearch"
+    SCREENS = {
+        "configuration": ConfigurationScreen(),
+        "add_index": AddIndexScreen(),
+        "search": SearchScreen(),
+        "data_load": DataLoadScreen(),
+    }
 
     # BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
-    # BINDINGS = [("b", "push_screen('connection_info')", "ConnectionInfo")]
 
     def on_mount(self) -> None:
-        self.install_screen(ConnectionInfo(), name="connection_info")
-        self.push_screen("connection_info")
+        if not config.meilisearch_url:
+            self.push_screen("configuration")
+        else:
+            self.set_theme()
+            self.push_screen("add_index")
 
-    # TITLE = "Meilisearch"
-
-    # def compose(self) -> ComposeResult:
-    #     """Create child widgets for the app."""
-    #     yield Header()
-    #     yield ConnectionInfo()
-    #     yield Footer()
-
-    # def action_toggle_dark(self) -> None:
-    #     """An action to toggle dark mode."""
-    #     self.dark = not self.dark
+    def set_theme(self) -> None:
+        if config.theme == Theme.DARK.value:
+            self.dark = True
+        else:
+            self.dark = False
 
 
 def main() -> int:

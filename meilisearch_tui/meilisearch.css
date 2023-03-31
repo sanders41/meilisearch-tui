@@ -1,0 +1,72 @@
+$primary: #300b5b;
+$primary-darken-1: #21004b;
+$primary-lighten-1: #ad6de7;
+$secondary: #ff5caa;
+
+Button {
+  background: $primary;
+  color: $secondary;
+  border: none;
+}
+
+Button:hover {
+  background: $primary-darken-1;
+  color: $secondary;
+  border: none;
+}
+
+Input {
+  border: tall $primary;
+}
+
+Footer {
+  background: $primary;
+}
+
+Footer > .footer--highlight {
+  background: $primary-lighten-1;
+}
+
+Footer > .footer--highlight-key {
+  background: $secondary;
+  text-style: bold;
+}
+
+Footer > .footer--key {
+  text-style: bold;
+  background: $primary-darken-1;
+}
+
+Switch {
+  border: tall $primary;
+  background: $panel;
+  height: auto;
+  width: auto;
+  padding: 0 2;
+}
+
+Switch:focus {
+  border: tall $primary;
+}
+
+Switch.-on > .switch--slider {
+  color: $secondary;
+}
+
+#body {
+  padding-top: 1;
+}
+
+.message-centered {
+  text-align: center;
+  padding-top: 1;
+}
+
+#tree-view {
+  scrollbar-gutter: stable;
+  overflow: auto;
+  width: auto;
+  height: 100%;
+  dock: left;
+  margin-right: 2;
+}
