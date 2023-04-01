@@ -30,5 +30,5 @@
 @dev-cli:
   textual console
 
-@dev:
-  textual run --dev meilisearch_tui/__main__.py
+@dev: start-meilisearch-detached && stop-meilisearch
+  -textual run --dev meilisearch_tui/__main__.py
