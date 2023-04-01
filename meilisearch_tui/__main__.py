@@ -4,7 +4,9 @@ from sys import platform
 
 from textual.app import App
 
+from meilisearch_tui.client import get_client
 from meilisearch_tui.config import Theme, config
+from meilisearch_tui.errors import NoMeilisearchUrlError
 from meilisearch_tui.screens.configuration import ConfigurationScreen
 from meilisearch_tui.screens.data_load import DataLoadScreen
 from meilisearch_tui.screens.index import AddIndexScreen
@@ -22,7 +24,7 @@ class MeilisearchApp(App):
         ("ctrl+c", "quit", "Quit"),
         ("s", "push_screen('search')", "Search"),
         ("d", "push_screen('data_load')", "Load Data"),
-        ("a", "push_screen('add_index')", "Add Index"),
+        # ("a", "push_screen('add_index')", "Add Index"),
         ("c", "push_screen('configuration')", "Configuration"),
     ]
     CSS_PATH = "meilisearch.css"
@@ -34,14 +36,20 @@ class MeilisearchApp(App):
         "data_load": DataLoadScreen(),
     }
 
-    # BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]
-
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         if not config.meilisearch_url:
             self.push_screen("configuration")
         else:
             self.set_theme()
-            self.push_screen("add_index")
+            try:
+                async with get_client() as client:
+                    indexes = await client.get_indexes()
+                if indexes:
+                    self.push_screen("search")
+                else:
+                    self.push_screen("data_load")
+            except NoMeilisearchUrlError:
+                self.push_screen("configuration")
 
     def set_theme(self) -> None:
         if config.theme == Theme.DARK.value:

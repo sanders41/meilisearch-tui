@@ -12,7 +12,7 @@ from meilisearch_tui.errors import NoMeilisearchUrlError
 @asynccontextmanager
 async def get_client() -> AsyncGenerator[Client, None]:
     if not config.meilisearch_url:
-        raise NoMeilisearchUrlError("Not Meilisearch URL provided")
+        raise NoMeilisearchUrlError("No Meilisearch URL provided")
 
     client = Client(config.meilisearch_url, config.master_key)
     try:

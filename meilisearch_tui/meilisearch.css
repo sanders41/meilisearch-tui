@@ -62,6 +62,10 @@ Switch.-on > .switch--slider {
   padding-top: 1;
 }
 
+.bottom-spacer {
+  margin-bottom: 1;
+}
+
 #tree-view {
   scrollbar-gutter: stable;
   overflow: auto;
@@ -69,4 +73,9 @@ Switch.-on > .switch--slider {
   height: 100%;
   dock: left;
   margin-right: 2;
+}
+
+#results-container {
+  height: auto;
+  overflow: hidden auto;
 }

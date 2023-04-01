@@ -8,6 +8,7 @@ from meilisearch_python_async.errors import (
     MeilisearchCommunicationError,
     MeilisearchError,
 )
+from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, Container
 from textual.screen import Screen
@@ -47,8 +48,17 @@ class DataLoadScreen(Screen):
             yield CurrentIndexes()
         yield Footer()
 
-    def on_mount(self) -> None:
-        self.query_one(DirectoryTree).focus()
+    async def on_mount(self) -> None:
+        index_name = self.query_one("#index", Input)
+        async with get_client() as client:
+            indexes = await client.get_indexes()
+
+        if indexes:
+            index_name.value = indexes[0].uid
+            self.query_one(DirectoryTree).focus()
+        else:
+            index_name.focus()
+
         self.query_one("#indexing_successful", Static).visible = False
         self.query_one("#indexing_error", Static).visible = False
 
@@ -96,6 +106,10 @@ class DataLoadScreen(Screen):
                 asyncio.create_task(self._error_message(f"{e}"))
             except Exception as e:
                 asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "enter":
+            self.query_one("#index_button", Button).press()
 
     async def _success_message(self) -> None:
         success = self.query_one("#indexing_successful", Static)

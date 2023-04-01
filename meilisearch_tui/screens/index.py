@@ -14,6 +14,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Static
 
 from meilisearch_tui.client import get_client
+from meilisearch_tui.config import config
 from meilisearch_tui.utils import get_current_indexes_string
 from meilisearch_tui.widgets.index import CurrentIndexes
 from meilisearch_tui.widgets.input import InputWithLabel
@@ -67,7 +68,6 @@ class AddIndexScreen(Screen):
 
                     indexes = await get_current_indexes_string()
                     self.query_one("#current_indexes", Static).update(indexes)
-
                 except MeilisearchApiError as e:
                     asyncio.create_task(self._error_message(f"{e}"))
                 except MeilisearchCommunicationError as e:
@@ -84,7 +84,15 @@ class AddIndexScreen(Screen):
     def on_mount(self) -> None:
         self.query_one("#index_creation_successful", Static).visible = False
         self.query_one("#index_creation_error", Static).visible = False
-        self.query_one("#index_name", Input).focus()
+        index_name = self.query_one("#index_name", Input)
+        primary_key = self.query_one("#primary_key", Input)
+
+        if config.meilisearch_url:
+            self.query_one("#index_name", Input).focus()
+        else:
+            self.query_one("#index_name", Input).focus()
+            index_name.placeholder = "Server URL not added to configuration"
+            primary_key.placeholder = "Server URL not added to configuration"
 
     async def _success_message(self) -> None:
         success = self.query_one("#index_creation_successful", Static)

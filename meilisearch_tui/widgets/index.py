@@ -21,5 +21,9 @@ class CurrentIndexes(Widget):
             yield Static(id="current_indexes", expand=True)
 
     async def on_mount(self) -> None:
-        indexes = await get_current_indexes_string()
-        self.query_one("#current_indexes", Static).update(indexes)
+        current_indexes = self.query_one("#current_indexes", Static)
+        try:
+            indexes = await get_current_indexes_string()
+            current_indexes.update(indexes)
+        except Exception as e:
+            current_indexes.update(f"Error: {e}")
