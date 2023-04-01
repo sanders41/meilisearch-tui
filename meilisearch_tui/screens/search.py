@@ -6,7 +6,7 @@ from meilisearch_python_async.models.search import SearchResults
 from textual.app import ComposeResult
 from textual.containers import Center, Container, Content
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Input, Markdown, Static
+from textual.widgets import Button, Footer, Input, Markdown
 
 from meilisearch_tui.client import get_client
 
