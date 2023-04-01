@@ -66,7 +66,7 @@ class MeilisearchApp(App):
                 self.query_one("#generic_error").renderable = f"An error occured: {e}"  # type: ignore
 
     def set_theme(self) -> None:
-        if config.theme == Theme.DARK.value:
+        if config.theme == Theme.DARK:
             self.dark = True
         else:
             self.dark = False

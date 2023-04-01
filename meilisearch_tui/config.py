@@ -61,7 +61,8 @@ class Config:
                 self.master_key = settings["master_key"]
 
             self.timeout = settings.get("timeout", None)
-            self.theme = settings.get("theme", Theme.DARK)
+            saved_theme = settings.get("theme", "dark")
+            self.theme = Theme.DARK if saved_theme == "dark" else Theme.LIGHT
 
     def save(self) -> None:
         settings: dict[str, Any] = {}
