@@ -55,6 +55,9 @@ Switch.-on > .switch--slider {
 
 #body {
   padding-top: 1;
+  scrollbar-color: $primary-lighten-1;
+  scrollbar-color-hover: $primary-lighten-1;
+  scrollbar-color-active: $primary;
 }
 
 .message-centered {
@@ -75,7 +78,18 @@ Switch.-on > .switch--slider {
   margin-right: 2;
 }
 
-#results-container {
+#results {
+  width: 100%;
   height: auto;
+}
+
+#results-container {
+  background: $background 50%;
+  margin: 0 0 1 0;
+  height: 100%;
   overflow: hidden auto;
+  border: tall $background;
+  scrollbar-color: $primary-lighten-1;
+  scrollbar-color-hover: $primary-lighten-1;
+  scrollbar-color-active: $primary;
 }
