@@ -6,7 +6,7 @@
 
 A TUI for Managing and Searching with [Meilisearch](https://github.com/meilisearch/meilisearch).
 
-![Search](./assets/search.gif)
+![Search](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/search.gif)
 
 ## Installation
 
