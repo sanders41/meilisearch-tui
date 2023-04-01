@@ -1,5 +1,6 @@
 # Meilisearch TUI
 
+[![Tests Status](https://github.com/sanders41/meilisearch-tui/workflows/Testing/badge.svg?branch=main&event=push)](https://github.com/sanders41/meilisearch-tui/actions?query=workflow%3ATesting+branch%3Amain+event%3Apush)
 [![pre-commit.ci status](https://results.pre-commit.ci/badge/github/sanders41/meilisearch-tui/main.svg)](https://results.pre-commit.ci/latest/github/sanders41/meilisearch-tui/main)
 [![PyPI version](https://badge.fury.io/py/meilisearch-tui.svg)](https://badge.fury.io/py/meilisearch-tui)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/meilisearch-tui?color=5cc141)](https://github.com/sanders41/meilisearch-tui)
