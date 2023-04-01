@@ -44,6 +44,7 @@ class SearchScreen(Screen):
             asyncio.create_task(self.lookup_word(message.value))
         else:
             await self.query_one("#results", Markdown).update("")
+            self.query_one("#load_more_button", Button).visible = False
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
@@ -54,25 +55,26 @@ class SearchScreen(Screen):
 
     async def lookup_word(self, search: str) -> None:
         index_name = self.query_one("#index_name", Input).value
-        results = self.query_one("#results", Markdown)
-        search = self.query_one("#search", Input).value
-        if not index_name:
-            await results.update("Error: No index provided")
+        results_box = self.query_one("#results", Markdown)
+        search_input = self.query_one("#search", Input)
+        if not index_name and search == search_input.value:
+            await results_box.update("Error: No index provided")
             return
 
         async with get_client() as client:
             index = client.index(index_name)
-            if search:
-                try:
-                    response = await index.search(search, limit=self.limit)
-                    if response:
-                        markdown = self.make_word_markdown(response)
-                        await results.update(markdown)
-                    else:
-                        await results.update("")
-                except Exception as e:
-                    await self.query_one("#results", Markdown).update(f"Error: {e}")
-                    return
+            try:
+                results = await index.search(search_input.value, limit=self.limit)
+            except Exception as e:
+                if search == search_input.value:
+                    await results_box.update(f"Error: {e}")
+                return
+
+        # Make sure a new search hasn't started. This prevents race conditions with displaying
+        # the search results by only updating the display if the search is still relavent.
+        if search == search_input.value:
+            markdown = self.make_word_markdown(results)
+            await results_box.update(markdown)
 
     def make_word_markdown(self, results: SearchResults) -> str:
         lines = []
@@ -93,4 +95,4 @@ class SearchScreen(Screen):
                 lines.append("-------------------------------")
             return "\n".join(lines)
 
-        return ""
+        return "No results found"
