@@ -2,13 +2,16 @@ from __future__ import annotations
 
 import asyncio
 
+from meilisearch_python_async.errors import MeilisearchCommunicationError
 from meilisearch_python_async.models.search import SearchResults
+from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, Container, Content
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Markdown
 
 from meilisearch_tui.client import get_client
+from meilisearch_tui.widgets.messages import ErrorMessage
 
 
 class SearchScreen(Screen):
@@ -17,6 +20,7 @@ class SearchScreen(Screen):
         self.limit = 20
 
     def compose(self) -> ComposeResult:
+        yield ErrorMessage("", classes="message-centered", id="generic_error")
         with Container(id="body"):
             yield Input(placeholder="Index", classes="bottom-spacer", id="index_name")
             yield Input(placeholder="Search", classes="bottom-spacer", id="search")
@@ -26,11 +30,26 @@ class SearchScreen(Screen):
                 yield Button(label="Load More", classes="bottom-spacer", id="load_more_button")
         yield Footer()
 
-    async def on_mount(self) -> None:
+    async def on_screen_resume(self, event: events.ScreenResume) -> None:
+        body_container = self.query_one("#body")
+        error_message = self.query_one("#generic_error")
+        body_container.visible = True
+        error_message.display = False
         index_name = self.query_one("#index_name", Input)
         search = self.query_one("#search", Input)
-        async with get_client() as client:
-            indexes = await client.get_indexes()
+        try:
+            async with get_client() as client:
+                indexes = await client.get_indexes()
+        except MeilisearchCommunicationError as e:
+            body_container.visible = False
+            error_message.display = True
+            error_message.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"
+            return
+        except Exception as e:
+            body_container.visible = False
+            error_message.display = True
+            error_message.renderable = f"An error occured: {e}."
+            return
 
         if indexes:
             index_name.value = indexes[0].uid
