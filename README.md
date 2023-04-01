@@ -41,3 +41,7 @@ will auto-populate the `Index` box.
 
 To search, enter the index you want to search on, by default the first index found will pre-populate
 the box. Then type the desired search.
+
+## Contributing
+
+Contributions to this project are welcome. If you are interesting in contributing please see our [contributing guide](CONTRIBUTING.md)
