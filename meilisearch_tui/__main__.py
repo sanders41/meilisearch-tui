@@ -59,11 +59,11 @@ class MeilisearchApp(App):
             except NoMeilisearchUrlError:
                 self.push_screen("configuration")
             except MeilisearchCommunicationError as e:
-                self.query_one(
+                self.query_one(  # type: ignore
                     "#generic_error"
                 ).renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"
             except Exception as e:
-                self.query_one("#generic_error").renderable = f"An error occured: {e}"
+                self.query_one("#generic_error").renderable = f"An error occured: {e}"  # type: ignore
 
     def set_theme(self) -> None:
         if config.theme == Theme.DARK.value:

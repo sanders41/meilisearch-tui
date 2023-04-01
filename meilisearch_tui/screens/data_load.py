@@ -60,12 +60,12 @@ class DataLoadScreen(Screen):
         except MeilisearchCommunicationError as e:
             body_container.visible = False
             error_message.display = True
-            error_message.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"
+            error_message.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"  # type: ignore
             return
         except Exception as e:
             body_container.visible = False
             error_message.display = True
-            error_message.renderable = f"An error occured: {e}."
+            error_message.renderable = f"An error occured: {e}."  # type: ignore
             return
 
         if indexes:
