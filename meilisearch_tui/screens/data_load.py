@@ -22,12 +22,12 @@ from meilisearch_tui.widgets.messages import ErrorMessage, SuccessMessage
 
 class DataLoadScreen(Screen):
     def compose(self) -> ComposeResult:
-        """Compose our UI."""
+        yield ErrorMessage("", classes="message-centered", id="generic_error")
         with Container(id="body"):
             yield DirectoryTree(Path.home(), id="tree-view")
             yield InputWithLabel(
                 label="Index",
-                input_id="index",
+                input_id="index_name",
                 error_id="index_error",
                 error_message="An index is require",
             )
@@ -48,10 +48,25 @@ class DataLoadScreen(Screen):
             yield CurrentIndexes()
         yield Footer()
 
-    async def on_mount(self) -> None:
-        index_name = self.query_one("#index", Input)
-        async with get_client() as client:
-            indexes = await client.get_indexes()
+    async def on_screen_resume(self, event: events.ScreenResume) -> None:
+        body_container = self.query_one("#body")
+        error_message = self.query_one("#generic_error")
+        body_container.visible = True
+        error_message.display = False
+        index_name = self.query_one("#index_name", Input)
+        try:
+            async with get_client() as client:
+                indexes = await client.get_indexes()
+        except MeilisearchCommunicationError as e:
+            body_container.visible = False
+            error_message.display = True
+            error_message.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"  # type: ignore
+            return
+        except Exception as e:
+            body_container.visible = False
+            error_message.display = True
+            error_message.renderable = f"An error occured: {e}."  # type: ignore
+            return
 
         if indexes:
             index_name.value = indexes[0].uid
@@ -77,7 +92,7 @@ class DataLoadScreen(Screen):
 
         if button_id == "index_button":
             data_file = self.query_one("#data_file", Input).value
-            index_name = self.query_one("#index", Input).value
+            index_name = self.query_one("#index_name", Input).value
 
             if not data_file or Path(data_file).suffix not in (".csv", ".json", ".jsonl"):
                 self.query_one("#data_file_error", Static).visible = True

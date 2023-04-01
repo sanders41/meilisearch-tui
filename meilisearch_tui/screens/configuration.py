@@ -70,7 +70,7 @@ class ConfigurationScreen(Screen):
         if event.key == "enter":
             self.query_one("#save_setting_button", Button).press()
 
-    def on_mount(self) -> None:
+    def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.query_one("#save_successful").visible = False
         self.query_one("#server_url", Input).focus()
 
