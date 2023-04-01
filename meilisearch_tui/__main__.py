@@ -12,7 +12,6 @@ from meilisearch_tui.config import Theme, config
 from meilisearch_tui.errors import NoMeilisearchUrlError
 from meilisearch_tui.screens.configuration import ConfigurationScreen
 from meilisearch_tui.screens.data_load import DataLoadScreen
-from meilisearch_tui.screens.index import AddIndexScreen
 from meilisearch_tui.screens.search import SearchScreen
 from meilisearch_tui.widgets.messages import ErrorMessage
 
@@ -34,7 +33,6 @@ class MeilisearchApp(App):
     TITLE = "Meilisearch"
     SCREENS = {
         "configuration": ConfigurationScreen(),
-        "add_index": AddIndexScreen(),
         "search": SearchScreen(),
         "data_load": DataLoadScreen(),
     }
