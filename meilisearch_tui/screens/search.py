@@ -50,7 +50,7 @@ class SearchScreen(Screen):
 
         if button_id == "load_more_button":
             self.limit += 20
-            asyncio.create_task(self.lookup_word(self.query_one("#search").value))
+            asyncio.create_task(self.lookup_word(self.query_one("#search", Input).value))
 
     async def lookup_word(self, search: str) -> None:
         index_name = self.query_one("#index_name", Input).value
@@ -77,7 +77,7 @@ class SearchScreen(Screen):
     def make_word_markdown(self, results: SearchResults) -> str:
         lines = []
 
-        if results.estimated_total_hits > len(results.hits):
+        if results.estimated_total_hits and results.estimated_total_hits > len(results.hits):
             self.query_one("#load_more_button", Button).visible = True
         else:
             self.query_one("#load_more_button", Button).visible = False
