@@ -1,8 +1,37 @@
+import os
+import shutil
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-from meilisearch_tui.config import Config, Theme, load_config
+from meilisearch_tui.config import Config, Theme, _get_default_directory, load_config
+
+
+def test_get_default_directory_defaults_to_home():
+    directory = _get_default_directory()
+    expected = Path(os.path.realpath(os.path.expanduser("~/.config/meilisearch-tui")))
+    assert directory == expected
+
+
+def test_adheres_to_xdg_specification():
+    with patch.dict(os.environ, {"XDG_CONFIG_HOME": "/tmp/fakehome"}):
+        directory = _get_default_directory()
+
+    expected = Path(os.path.realpath("/tmp/fakehome/meilisearch-tui"))
+    assert directory == expected
+
+
+def test_save_creates_dir(mock_config_dir):
+    config = Config(
+        config_dir=mock_config_dir, meilisearch_url="http://127.0.0.1:7700", master_key="masterKey"
+    )
+    settings_file = mock_config_dir / config.settings_file
+
+    shutil.rmtree(mock_config_dir)
+    config.save()
+
+    assert settings_file.exists()
 
 
 def test_load_config(mock_config, mock_config_dir):
