@@ -22,38 +22,38 @@ from meilisearch_tui.widgets.messages import ErrorMessage, SuccessMessage
 
 class DataLoadScreen(Screen):
     def compose(self) -> ComposeResult:
-        yield ErrorMessage("", classes="message-centered", id="generic_error")
+        yield ErrorMessage("", classes="message-centered", id="generic-error")
         with Container(id="body"):
             yield DirectoryTree(Path.home(), id="tree-view")
             yield InputWithLabel(
                 label="Index",
-                input_id="index_name",
-                error_id="index_error",
+                input_id="index-name",
+                error_id="index-error",
                 error_message="An index is require",
             )
             yield InputWithLabel(
                 label="File Path",
-                input_id="data_file",
-                error_id="data_file_error",
+                input_id="data-file",
+                error_id="data-file-error",
                 error_message="A Path to a json, jsonl, or csv file is required",
             )
             with Center():
-                yield Button(label="Index File", id="index_button")
+                yield Button(label="Index File", id="index-button")
             yield SuccessMessage(
                 "Data successfully sent for indexing",
                 classes="message-centered",
-                id="indexing_successful",
+                id="indexing-successful",
             )
-            yield ErrorMessage("", classes="message-centered", id="indexing_error")
+            yield ErrorMessage("", classes="message-centered", id="indexing-error")
             yield CurrentIndexes()
         yield Footer()
 
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         body_container = self.query_one("#body")
-        error_message = self.query_one("#generic_error")
+        error_message = self.query_one("#generic-error")
         body_container.visible = True
         error_message.display = False
-        index_name = self.query_one("#index_name", Input)
+        index_name = self.query_one("#index-name", Input)
         try:
             async with get_client() as client:
                 indexes = await client.get_indexes()
@@ -74,13 +74,13 @@ class DataLoadScreen(Screen):
         else:
             index_name.focus()
 
-        self.query_one("#indexing_successful", Static).visible = False
-        self.query_one("#indexing_error", Static).visible = False
+        self.query_one("#indexing-successful", Static).visible = False
+        self.query_one("#indexing-error", Static).visible = False
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         """Called when the user click a file in the directory tree."""
         event.stop()
-        code_view = self.query_one("#data_file", Input)
+        code_view = self.query_one("#data-file", Input)
         try:
             code_view.value = event.path
         except Exception:
@@ -90,15 +90,15 @@ class DataLoadScreen(Screen):
         button_id = event.button.id
         error = False
 
-        if button_id == "index_button":
-            data_file = self.query_one("#data_file", Input).value
-            index_name = self.query_one("#index_name", Input).value
+        if button_id == "index-button":
+            data_file = self.query_one("#data-file", Input).value
+            index_name = self.query_one("#index-name", Input).value
 
             if not data_file or Path(data_file).suffix not in (".csv", ".json", ".jsonl"):
-                self.query_one("#data_file_error", Static).visible = True
+                self.query_one("#data-file-error", Static).visible = True
                 error = True
             if not index_name:
-                self.query_one("#index_error", Static).visible = True
+                self.query_one("#index-error", Static).visible = True
                 error = True
 
             if error:
@@ -124,16 +124,16 @@ class DataLoadScreen(Screen):
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.query_one("#index_button", Button).press()
+            self.query_one("#index-button", Button).press()
 
     async def _success_message(self) -> None:
-        success = self.query_one("#indexing_successful", Static)
+        success = self.query_one("#indexing-successful", Static)
         success.visible = True
         await asyncio.sleep(5)
         success.visible = False
 
     async def _error_message(self, message: str) -> None:
-        error = self.query_one("#indexing_error", Static)
+        error = self.query_one("#indexing-error", Static)
         error.renderable = message
         error.visible = True
         await asyncio.sleep(5)

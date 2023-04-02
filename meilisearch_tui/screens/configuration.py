@@ -18,35 +18,35 @@ class ConfigurationScreen(Screen):
         with Container(id="body"):
             yield InputWithLabel(
                 label="Server URL",
-                input_id="server_url",
-                error_id="server_url_error",
+                input_id="server-url",
+                error_id="server-url-error",
                 error_message="A server URL is required",
             )
             yield InputWithLabel(
                 label="Master Key",
-                input_id="master_key",
+                input_id="master-key",
                 input_placeholder="Can also be set with the MEILI_MASTER_KEY enviornment vairable",
-                error_id="master_key_error",
+                error_id="master-key-error",
                 password=True,
             )
             yield Label("Dark Theme (restart required for change to take affect)")
             yield Switch(value=True, id="theme")
             with Center():
-                yield Button(label="Save", id="save_setting_button")
+                yield Button(label="Save", id="save-setting-button")
             yield SuccessMessage(
                 "Settings successfully saved",
                 classes="message-centered",
-                id="save_successful",
+                id="save-successful",
             )
-            yield ErrorMessage("", classes="message-centered", id="save_error")
+            yield ErrorMessage("", classes="message-centered", id="save-error")
         yield Footer()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
 
-        if button_id == "save_setting_button":
-            server_url = self.query_one("#server_url", Input).value
-            master_key = self.query_one("#master_key", Input).value
+        if button_id == "save-setting-button":
+            server_url = self.query_one("#server-url", Input).value
+            master_key = self.query_one("#master-key", Input).value
             config = load_config()
 
             config.meilisearch_url = server_url
@@ -59,7 +59,7 @@ class ConfigurationScreen(Screen):
                 config.theme = Theme.LIGHT
 
             if not config.meilisearch_url:
-                self.query_one("#server_url_error", Static).visible = True
+                self.query_one("#server-url-error", Static).visible = True
             else:
                 try:
                     config.save()
@@ -69,31 +69,31 @@ class ConfigurationScreen(Screen):
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.query_one("#save_setting_button", Button).press()
+            self.query_one("#save-setting-button", Button).press()
 
     def on_screen_resume(self, event: events.ScreenResume) -> None:
-        self.query_one("#save_successful").visible = False
-        self.query_one("#server_url", Input).focus()
+        self.query_one("#save-successful").visible = False
+        self.query_one("#server-url", Input).focus()
         config = load_config()
 
         theme_switch = self.query_one("#theme", Switch)
         if config.meilisearch_url:
-            self.query_one("#server_url", Input).value = config.meilisearch_url
+            self.query_one("#server-url", Input).value = config.meilisearch_url
         if config.master_key:
-            self.query_one("#master_key", Input).value = config.master_key
+            self.query_one("#master-key", Input).value = config.master_key
         if config.theme == Theme.DARK:
             theme_switch.value = True
         else:
             theme_switch.value = False
 
     async def _success_message(self) -> None:
-        success = self.query_one("#save_successful", Static)
+        success = self.query_one("#save-successful", Static)
         success.visible = True
         await asyncio.sleep(5)
         success.visible = False
 
     async def _error_message(self, message: str) -> None:
-        error = self.query_one("#save_error", Static)
+        error = self.query_one("#save-error", Static)
         error.renderable = message
         error.visible = True
         await asyncio.sleep(5)

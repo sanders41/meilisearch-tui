@@ -39,7 +39,7 @@ class MeilisearchApp(App):
 
     def compose(self) -> ComposeResult:
         with Container(id="body"):
-            yield ErrorMessage("", classes="message-centered", id="generic_error")
+            yield ErrorMessage("", classes="message-centered", id="generic-error")
         yield Footer()
 
     async def on_mount(self) -> None:
@@ -59,10 +59,10 @@ class MeilisearchApp(App):
                 self.push_screen("configuration")
             except MeilisearchCommunicationError as e:
                 self.query_one(  # type: ignore
-                    "#generic_error"
+                    "#generic-error"
                 ).renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"
             except Exception as e:
-                self.query_one("#generic_error").renderable = f"An error occured: {e}"  # type: ignore
+                self.query_one("#generic-error").renderable = f"An error occured: {e}"  # type: ignore
 
     def set_theme(self) -> None:
         config = load_config()

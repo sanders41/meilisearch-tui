@@ -20,22 +20,22 @@ class SearchScreen(Screen):
         self.limit = 20
 
     def compose(self) -> ComposeResult:
-        yield ErrorMessage("", classes="message-centered", id="generic_error")
+        yield ErrorMessage("", classes="message-centered", id="generic-error")
         with Container(id="body"):
-            yield Input(placeholder="Index", classes="bottom-spacer", id="index_name")
+            yield Input(placeholder="Index", classes="bottom-spacer", id="index-name")
             yield Input(placeholder="Search", classes="bottom-spacer", id="search")
             with Content(id="results-container"):
                 yield Markdown(id="results")
             with Center():
-                yield Button(label="Load More", classes="bottom-spacer", id="load_more_button")
+                yield Button(label="Load More", classes="bottom-spacer", id="load-more-button")
         yield Footer()
 
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         body_container = self.query_one("#body")
-        error_message = self.query_one("#generic_error")
+        error_message = self.query_one("#generic-error")
         body_container.visible = True
         error_message.display = False
-        index_name = self.query_one("#index_name", Input)
+        index_name = self.query_one("#index-name", Input)
         search = self.query_one("#search", Input)
         try:
             async with get_client() as client:
@@ -55,7 +55,7 @@ class SearchScreen(Screen):
             index_name.value = indexes[0].uid
 
         search.focus()
-        self.query_one("#load_more_button", Button).visible = False
+        self.query_one("#load-more-button", Button).visible = False
 
     async def on_input_changed(self, message: Input.Changed) -> None:
         self.limit = 20
@@ -63,17 +63,17 @@ class SearchScreen(Screen):
             asyncio.create_task(self.lookup_word(message.value))
         else:
             await self.query_one("#results", Markdown).update("")
-            self.query_one("#load_more_button", Button).visible = False
+            self.query_one("#load-more-button", Button).visible = False
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
 
-        if button_id == "load_more_button":
+        if button_id == "load-more-button":
             self.limit += 20
             asyncio.create_task(self.lookup_word(self.query_one("#search", Input).value))
 
     async def lookup_word(self, search: str) -> None:
-        index_name = self.query_one("#index_name", Input).value
+        index_name = self.query_one("#index-name", Input).value
         results_box = self.query_one("#results", Markdown)
         search_input = self.query_one("#search", Input)
         if not index_name and search == search_input.value:
@@ -99,9 +99,9 @@ class SearchScreen(Screen):
         lines = []
 
         if results.estimated_total_hits and results.estimated_total_hits > len(results.hits):
-            self.query_one("#load_more_button", Button).visible = True
+            self.query_one("#load-more-button", Button).visible = True
         else:
-            self.query_one("#load_more_button", Button).visible = False
+            self.query_one("#load-more-button", Button).visible = False
 
         lines.append(
             f"## Hits: ~{results.estimated_total_hits} | Search time: {results.processing_time_ms} ms"
