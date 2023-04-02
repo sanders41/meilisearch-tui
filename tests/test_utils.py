@@ -17,7 +17,7 @@ from meilisearch_tui.utils import get_current_indexes_string
         [[("movies", None)], "Index UID: movies\n\n"],
     ],
 )
-@pytest.mark.usefixtures("clear_indexes", "mock_config")
+@pytest.mark.usefixtures("clear_indexes", "mock_config", "env_vars")
 async def test_get_current_indexes_string(indexes, expected, test_client):
     for index in indexes:
         await test_client.create_index(index[0], index[1])
@@ -27,7 +27,7 @@ async def test_get_current_indexes_string(indexes, expected, test_client):
     assert result == expected
 
 
-@pytest.mark.usefixtures("mock_config")
+@pytest.mark.usefixtures("mock_config", "env_vars")
 async def test_get_current_indexes_string_no_indexes():
     result = await get_current_indexes_string()
 

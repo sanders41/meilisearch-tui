@@ -5,12 +5,13 @@ from typing import AsyncGenerator
 
 from meilisearch_python_async import Client
 
-from meilisearch_tui.config import config
+from meilisearch_tui.config import load_config
 from meilisearch_tui.errors import NoMeilisearchUrlError
 
 
 @asynccontextmanager
 async def get_client() -> AsyncGenerator[Client, None]:
+    config = load_config()
     if not config.meilisearch_url:
         raise NoMeilisearchUrlError("No Meilisearch URL provided")
 

@@ -8,7 +8,7 @@ from textual.containers import Container
 from textual.widgets import Footer
 
 from meilisearch_tui.client import get_client
-from meilisearch_tui.config import Theme, config
+from meilisearch_tui.config import Theme, load_config
 from meilisearch_tui.errors import NoMeilisearchUrlError
 from meilisearch_tui.screens.configuration import ConfigurationScreen
 from meilisearch_tui.screens.data_load import DataLoadScreen
@@ -43,6 +43,7 @@ class MeilisearchApp(App):
         yield Footer()
 
     async def on_mount(self) -> None:
+        config = load_config()
         if not config.meilisearch_url:
             self.push_screen("configuration")
         else:
@@ -64,6 +65,7 @@ class MeilisearchApp(App):
                 self.query_one("#generic_error").renderable = f"An error occured: {e}"  # type: ignore
 
     def set_theme(self) -> None:
+        config = load_config()
         if config.theme == Theme.DARK:
             self.dark = True
         else:

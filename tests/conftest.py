@@ -1,4 +1,5 @@
 import json
+import os
 from pathlib import Path
 from unittest.mock import patch
 
@@ -56,7 +57,17 @@ def mock_config(mock_config_dir):
     with open(mock_config_dir / "settings.json", "w") as f:
         json.dump(config, f)
 
-    return load_config()
+    return load_config(config_dir=mock_config_dir)
+
+
+@pytest.fixture
+def env_vars():
+    with patch.dict(
+        os.environ,
+        {"MEILI_HTTP_ADDR": "http://127.0.0.1:7700", "MEILI_MASTER_KEY": "masterKey"},
+        clear=True,
+    ):
+        yield
 
 
 @pytest.fixture
