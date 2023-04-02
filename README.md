@@ -32,8 +32,8 @@ meilisearch
 ```
 
 The first time you start the app you will need to enter the server address and master key (if using
-one) into the configuration. If the `MEILI_MASTER_KEY` environment variable is set, the app is
-able to get the master key from this.
+one) into the configuration. If the `MEILI_HTTP_ADDR` and/or `MEILI_MASTER_KEY` environment variables
+are set, these values will be used for the `meilisearch_url` and `master_key`.
 
 If you have not already created an index and loaded data, this can be done from the `Load Data`
 screen. Specifying an `Index` here will create the index if it does not already exist. Indexes
