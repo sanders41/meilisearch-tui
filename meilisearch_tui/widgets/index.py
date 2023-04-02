@@ -18,11 +18,11 @@ class CurrentIndexes(Widget):
     """
 
     def compose(self) -> ComposeResult:
-        with VerticalScroll(id="current_indexes_view"):
-            yield Static(id="current_indexes", expand=True)
+        with VerticalScroll(id="current-indexes-view"):
+            yield Static(id="current-indexes", expand=True)
 
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
-        current_indexes = self.query_one("#current_indexes", Static)
+        current_indexes = self.query_one("#current-indexes", Static)
         try:
             indexes = await get_current_indexes_string()
             current_indexes.update(indexes)
