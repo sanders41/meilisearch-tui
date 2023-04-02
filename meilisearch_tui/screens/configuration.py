@@ -8,7 +8,7 @@ from textual.containers import Center, Container
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Label, Static, Switch
 
-from meilisearch_tui.config import Theme, config
+from meilisearch_tui.config import Theme, load_config
 from meilisearch_tui.widgets.input import ErrorMessage, InputWithLabel
 from meilisearch_tui.widgets.messages import SuccessMessage
 
@@ -47,6 +47,7 @@ class ConfigurationScreen(Screen):
         if button_id == "save_setting_button":
             server_url = self.query_one("#server_url", Input).value
             master_key = self.query_one("#master_key", Input).value
+            config = load_config()
 
             config.meilisearch_url = server_url
             config.master_key = master_key
@@ -73,6 +74,7 @@ class ConfigurationScreen(Screen):
     def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.query_one("#save_successful").visible = False
         self.query_one("#server_url", Input).focus()
+        config = load_config()
 
         theme_switch = self.query_one("#theme", Switch)
         if config.meilisearch_url:

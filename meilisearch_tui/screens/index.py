@@ -14,7 +14,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Static
 
 from meilisearch_tui.client import get_client
-from meilisearch_tui.config import config
+from meilisearch_tui.config import load_config
 from meilisearch_tui.utils import get_current_indexes_string
 from meilisearch_tui.widgets.index import CurrentIndexes
 from meilisearch_tui.widgets.input import InputWithLabel
@@ -86,6 +86,7 @@ class AddIndexScreen(Screen):
         self.query_one("#index_creation_error", Static).visible = False
         index_name = self.query_one("#index_name", Input)
         primary_key = self.query_one("#primary_key", Input)
+        config = load_config()
 
         if config.meilisearch_url:
             self.query_one("#index_name", Input).focus()

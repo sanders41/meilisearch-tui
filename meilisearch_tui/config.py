@@ -34,9 +34,10 @@ class Config:
         *,
         timeout: int | None = None,
         theme: Theme = Theme.DARK,
+        config_dir: Path | None = None,
     ) -> None:
-        self.settings_dir = Config.get_default_directory()
-        self.settings_file = self.settings_dir / "settings.json"
+        self.config_dir = config_dir or Config.get_default_directory()
+        self.settings_file = self.config_dir / "settings.json"
         self.meilisearch_url = meilisearch_url
         self.master_key = master_key
         self.timeout = timeout
@@ -47,15 +48,14 @@ class Config:
             self.settings_file.unlink()
 
     def load(self) -> None:
-        self.master_key = os.getenv("MEILI_MASTER_KEY", None)
-
         settings = None
         if self.settings_file.exists():
             with open(self.settings_file) as f:
                 settings = json.load(f)
 
         if settings:
-            self.meilisearch_url = settings.get("meilisearch_url", None)
+            if settings.get("meilisearch_url"):
+                self.meilisearch_url = settings["meilisearch_url"]
 
             if settings.get("master_key"):
                 self.master_key = settings["master_key"]
@@ -64,11 +64,17 @@ class Config:
             saved_theme = settings.get("theme", "dark")
             self.theme = Theme.DARK if saved_theme == "dark" else Theme.LIGHT
 
+        if os.getenv("MEILI_HTTP_ADDR", None):
+            self.meilisearch_url = os.getenv("MEILI_HTTP_ADDR")
+
+        if os.getenv("MEILI_MASTER_KEY", None):
+            self.master_key = os.getenv("MEILI_MASTER_KEY")
+
     def save(self) -> None:
         settings: dict[str, Any] = {}
 
-        if not self.settings_dir.exists():
-            self.settings_dir.mkdir(parents=True)
+        if not self.config_dir.exists():
+            self.config_dir.mkdir(parents=True)
 
         if self.meilisearch_url:
             settings["meilisearch_url"] = self.meilisearch_url
@@ -88,10 +94,7 @@ class Config:
 
 
 @lru_cache(maxsize=1)
-def load_config() -> Config:
-    config = Config()
+def load_config(config_dir: Path | None = None) -> Config:
+    config = Config(config_dir=config_dir)
     config.load()
     return config
-
-
-config = load_config()
