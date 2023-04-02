@@ -67,7 +67,6 @@ class ConfigurationScreen(Screen):
                 except Exception as e:
                     asyncio.create_task(self._error_message(f"{e}"))
 
-
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.query_one("#save-setting-button", Button).press()
