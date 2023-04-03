@@ -25,7 +25,7 @@ pip install meilisearch-tui
 
 ## Usage
 
-start with TUI by running
+Start the TUI by running
 
 ```sh
 meilisearch
