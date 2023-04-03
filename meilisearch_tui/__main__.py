@@ -12,6 +12,7 @@ from meilisearch_tui.config import Theme, load_config
 from meilisearch_tui.errors import NoMeilisearchUrlError
 from meilisearch_tui.screens.configuration import ConfigurationScreen
 from meilisearch_tui.screens.data_load import DataLoadScreen
+from meilisearch_tui.screens.meilisearch_settings import MeilisearchSettings
 from meilisearch_tui.screens.search import SearchScreen
 from meilisearch_tui.widgets.messages import ErrorMessage
 
@@ -26,6 +27,7 @@ class MeilisearchApp(App):
     BINDINGS = [
         ("ctrl+c", "quit", "Quit"),
         ("s", "push_screen('search')", "Search"),
+        ("m", "push_screen('meilisearch_settings')", "Meilisearch Settings"),
         ("d", "push_screen('data_load')", "Load Data"),
         ("c", "push_screen('configuration')", "Configuration"),
     ]
@@ -35,6 +37,7 @@ class MeilisearchApp(App):
         "configuration": ConfigurationScreen(),
         "search": SearchScreen(),
         "data_load": DataLoadScreen(),
+        "meilisearch_settings": MeilisearchSettings(),
     }
 
     def compose(self) -> ComposeResult:
