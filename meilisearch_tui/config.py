@@ -39,7 +39,9 @@ class Config:
         self.config_dir = config_dir or Config.get_default_directory()
         self.settings_file = self.config_dir / "settings.json"
         self.meilisearch_url = meilisearch_url
+        self._meilisearch_url_env_var = False
         self.master_key = master_key
+        self._meilisearch_master_key_env_var = False
         self.timeout = timeout
         self.theme = theme
 
@@ -66,9 +68,15 @@ class Config:
 
         if os.getenv("MEILI_HTTP_ADDR", None):
             self.meilisearch_url = os.getenv("MEILI_HTTP_ADDR")
+            self._meilisearch_url_env_var = True
+        else:
+            self._meilisearch_url_env_var = False
 
         if os.getenv("MEILI_MASTER_KEY", None):
             self.master_key = os.getenv("MEILI_MASTER_KEY")
+            self._meilisearch_master_key_env_var = True
+        else:
+            self._meilisearch_master_key_env_var = False
 
     def save(self) -> None:
         settings: dict[str, Any] = {}
@@ -76,10 +84,10 @@ class Config:
         if not self.config_dir.exists():
             self.config_dir.mkdir(parents=True)
 
-        if self.meilisearch_url:
+        if self.meilisearch_url and not self._meilisearch_url_env_var:
             settings["meilisearch_url"] = self.meilisearch_url
 
-        if self.master_key:
+        if self.master_key and not self._meilisearch_master_key_env_var:
             settings["master_key"] = self.master_key
 
         if self.timeout:
