@@ -53,6 +53,10 @@ Switch.-on > .switch--slider {
   color: $secondary;
 }
 
+MarkdownH1 {
+  background: $primary;
+}
+
 #body {
   margin-top: 1;
   scrollbar-color: $primary-lighten-1;
