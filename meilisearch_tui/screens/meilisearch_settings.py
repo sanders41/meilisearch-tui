@@ -9,7 +9,7 @@ from textual import events
 from textual.app import ComposeResult
 from textual.containers import Container, Content
 from textual.screen import Screen
-from textual.widgets import Footer, Markdown, Static
+from textual.widgets import Footer, Markdown
 
 from meilisearch_tui.client import get_client
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
@@ -25,7 +25,6 @@ class MeilisearchSettings(Screen):
         yield ErrorMessage("", classes="message-centered", id="generic-error")
         yield IndexSidebar(classes="sidebar")
         with Container(id="body"):
-            yield Static("start", id="test")
             with Content(id="results-container"):
                 yield Markdown(id="results")
         yield Footer()
@@ -38,17 +37,11 @@ class MeilisearchSettings(Screen):
         index_sidebar = self.query_one(IndexSidebar)
         await index_sidebar.update()
         self.selected_index = index_sidebar.selected_index
-        if self.selected_index:
-            self.query_one("#test", Static).update(self.selected_index)
-
         asyncio.create_task(self.load_indexes())
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         index_sidebar = self.query_one(IndexSidebar)
         self.selected_index = index_sidebar.selected_index
-        if self.selected_index:
-            self.query_one("#test", Static).update(self.selected_index)
-
         asyncio.create_task(self.load_indexes())
 
     async def load_indexes(self) -> None:
