@@ -69,6 +69,13 @@ Switch.-on > .switch--slider {
   margin-bottom: 1;
 }
 
+.sidebar {
+  dock: left;
+  background: $primary;
+  height: 100%;
+  width: 20;
+}
+
 #tree-view {
   scrollbar-gutter: stable;
   overflow: auto;
