@@ -74,6 +74,7 @@ class DataLoadScreen(Screen):
         else:
             index_name.focus()
 
+        await self.query_one(CurrentIndexes).update()
         self.query_one("#indexing-successful", Static).visible = False
         self.query_one("#indexing-error", Static).visible = False
 
@@ -121,6 +122,8 @@ class DataLoadScreen(Screen):
                 asyncio.create_task(self._error_message(f"{e}"))
             except Exception as e:
                 asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+
+        await self.query_one(CurrentIndexes).update()
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":

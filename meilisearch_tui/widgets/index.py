@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from textual import events
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
 from textual.widget import Widget
@@ -21,7 +20,7 @@ class CurrentIndexes(Widget):
         with VerticalScroll(id="current-indexes-view"):
             yield Static(id="current-indexes", expand=True)
 
-    async def on_screen_resume(self, event: events.ScreenResume) -> None:
+    async def update(self) -> None:
         current_indexes = self.query_one("#current-indexes", Static)
         try:
             indexes = await get_current_indexes_string()
