@@ -8,9 +8,10 @@ from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, Container, Content
 from textual.screen import Screen
-from textual.widgets import Button, Footer, Input, Markdown
+from textual.widgets import Button, Footer, Input, Markdown, Static
 
 from meilisearch_tui.client import get_client
+from meilisearch_tui.widgets.index_sidebar import IndexSidebar
 from meilisearch_tui.widgets.messages import ErrorMessage
 
 
@@ -18,11 +19,13 @@ class SearchScreen(Screen):
     def __init__(self) -> None:
         super().__init__()
         self.limit = 20
+        self.selected_index: str | None = None
 
     def compose(self) -> ComposeResult:
         yield ErrorMessage("", classes="message-centered", id="generic-error")
+        yield IndexSidebar(classes="sidebar")
         with Container(id="body"):
-            yield Input(placeholder="Index", classes="bottom-spacer", id="index-name")
+            yield Static("No index selected", id="index-name", classes="bottom-spacer")
             yield Input(placeholder="Search", classes="bottom-spacer", id="search")
             with Content(id="results-container"):
                 yield Markdown(id="results")
@@ -35,8 +38,12 @@ class SearchScreen(Screen):
         error_message = self.query_one("#generic-error")
         body_container.visible = True
         error_message.display = False
-        index_name = self.query_one("#index-name", Input)
+        index_name = self.query_one("#index-name", Static)
+        index_sidebar = self.query_one(IndexSidebar)
+        await index_sidebar.update()
         search = self.query_one("#search", Input)
+        search.value = ""
+        await self.query_one("#results", Markdown).update("")
         try:
             async with get_client() as client:
                 indexes = await client.get_indexes()
@@ -52,10 +59,21 @@ class SearchScreen(Screen):
             return
 
         if indexes:
-            index_name.value = indexes[0].uid
+            index_name.update(f"Searching index: {indexes[0].uid}")
+            self.selected_index = index_sidebar.selected_index
+        else:
+            self.selected_index = None
+            self.query_one("#index-name", Static).update("No index selected")
 
         search.focus()
         self.query_one("#load-more-button", Button).visible = False
+
+    async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
+        index_sidebar = self.query_one(IndexSidebar)
+        self.selected_index = index_sidebar.selected_index
+        self.query_one("#index-name", Static).update(f"Searching index: {self.selected_index}")
+        self.query_one("#search", Input).value = ""
+        await self.query_one("#results", Markdown).update("")
 
     async def on_input_changed(self, message: Input.Changed) -> None:
         self.limit = 20
@@ -73,15 +91,18 @@ class SearchScreen(Screen):
             asyncio.create_task(self.lookup_word(self.query_one("#search", Input).value))
 
     async def lookup_word(self, search: str) -> None:
-        index_name = self.query_one("#index-name", Input).value
         results_box = self.query_one("#results", Markdown)
         search_input = self.query_one("#search", Input)
-        if not index_name and search == search_input.value:
+        if not self.selected_index and search == search_input.value:
             await results_box.update("Error: No index provided")
             return
 
+        if not self.selected_index:
+            await results_box.update("No index selected")
+            return
+
         async with get_client() as client:
-            index = client.index(index_name)
+            index = client.index(self.selected_index)
             try:
                 results = await index.search(search_input.value, limit=self.limit)
             except Exception as e:
