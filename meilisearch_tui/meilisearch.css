@@ -54,7 +54,7 @@ Switch.-on > .switch--slider {
 }
 
 #body {
-  padding-top: 1;
+  margin-top: 1;
   scrollbar-color: $primary-lighten-1;
   scrollbar-color-hover: $primary-lighten-1;
   scrollbar-color-active: $primary;
@@ -70,10 +70,26 @@ Switch.-on > .switch--slider {
 }
 
 .sidebar {
-  dock: left;
   background: $primary;
+  overflow: auto;
+  width: auto;
+  min-width: 30;
   height: 100%;
-  width: 20;
+  dock: left;
+  margin-right: 2;
+  dock: left;
+}
+
+ListItem {
+  background: $primary-darken-1;
+  margin: 1 1;
+}
+ListItem > Widget :hover {
+  background: $primary-lighten-1;
+}
+
+ListView:focus > ListItem.--highlight {
+  background: $secondary;
 }
 
 #tree-view {
