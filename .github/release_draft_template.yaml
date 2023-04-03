@@ -8,16 +8,14 @@ version-resolver:
     labels:
       - 'breaking-change'
       - 'enhancement'
-      - 'feature'
   default: patch
 categories:
   - title: 'Features'
     labels:
-      - 'feature'
       - 'enhancement'
   - title: 'Bug Fixes'
     labels:
-      - 'bug-fix'
+      - 'bug'
   - title: '⚠ Breaking changes'
     label: 'breaking-change'
 change-template: '- $TITLE @$AUTHOR (#$NUMBER)'

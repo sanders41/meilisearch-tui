@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "meilisearch-tui"
-version = "0.1.1"
+version = "0.1.2"
 description = "A TUI for Managing and Searching with Meilisearch"
 authors = ["Paul Sanders <psanders1@gmail.com>"]
 license = "MIT"
@@ -22,8 +22,8 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.8"
-meilisearch-python-async = "1.0.0"
-textual = "0.17.1"
+meilisearch-python-async = "1.1.0"
+textual = "0.17.3"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
