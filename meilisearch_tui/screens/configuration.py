@@ -19,6 +19,7 @@ class ConfigurationScreen(Screen):
             yield InputWithLabel(
                 label="Server URL",
                 input_id="server-url",
+                input_placeholder="Can also be set with the MEILI_HTTP_ADDR enviornment vairable",
                 error_id="server-url-error",
                 error_message="A server URL is required",
             )
@@ -49,8 +50,10 @@ class ConfigurationScreen(Screen):
             master_key = self.query_one("#master-key", Input).value
             config = load_config()
 
-            config.meilisearch_url = server_url
-            config.master_key = master_key
+            if not config._meilisearch_url_env_var:
+                config.meilisearch_url = server_url
+            if not config._meilisearch_master_key_env_var:
+                config.master_key = master_key
 
             theme_switch = self.query_one("#theme", Switch)
             if theme_switch.value:
@@ -73,14 +76,28 @@ class ConfigurationScreen(Screen):
 
     def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.query_one("#save-successful").visible = False
-        self.query_one("#server-url", Input).focus()
+        server_url = self.query_one("#server-url", Input)
+        server_url.focus()
+        master_key = self.query_one("#master-key", Input)
         config = load_config()
 
         theme_switch = self.query_one("#theme", Switch)
-        if config.meilisearch_url:
-            self.query_one("#server-url", Input).value = config.meilisearch_url
-        if config.master_key:
-            self.query_one("#master-key", Input).value = config.master_key
+        if config._meilisearch_url_env_var:
+            server_url.value = "Set from MEILI_HTTP_ADDR environment variable"
+            server_url.disabled = True
+        elif config.meilisearch_url:
+            server_url.value = config.meilisearch_url
+            server_url.disabled = False
+
+        if config._meilisearch_master_key_env_var:
+            master_key.value = "Set from MEILI_MASTER_KEY enviornment variable"
+            master_key.disabled = True
+            master_key.password = False
+        elif config.master_key:
+            master_key.password = True
+            master_key.value = config.master_key
+            master_key.disabled = False
+
         if config.theme == Theme.DARK:
             theme_switch.value = True
         else:
