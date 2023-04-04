@@ -71,7 +71,7 @@ class SearchScreen(Screen):
         self.generic_error.display = False
         await self.index_sidebar.update()
         self.search_input.value = ""
-        await self.results.update("")
+        self.results.update("")
         try:
             async with get_client() as client:
                 indexes = await client.get_indexes()
@@ -100,14 +100,14 @@ class SearchScreen(Screen):
         self.selected_index = self.index_sidebar.selected_index
         self.index_name.update(f"Searching index: {self.selected_index}")
         self.search_input.value = ""
-        await self.results.update("")
+        self.results.update("")
 
     async def on_input_changed(self, message: Input.Changed) -> None:
         self.limit = 20
         if message.value:
             asyncio.create_task(self.lookup_word(message.value))
         else:
-            await self.results.update("")
+            self.results.update("")
             self.load_more_button.visible = False
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -119,11 +119,11 @@ class SearchScreen(Screen):
 
     async def lookup_word(self, search: str) -> None:
         if not self.selected_index and search == self.search_input.value:
-            await self.results.update("Error: No index provided")
+            self.results.update("Error: No index provided")
             return
 
         if not self.selected_index:
-            await self.results.update("No index selected")
+            self.results.update("No index selected")
             return
 
         async with get_client() as client:
@@ -132,14 +132,14 @@ class SearchScreen(Screen):
                 results = await index.search(self.search_input.value, limit=self.limit)
             except Exception as e:
                 if search == self.search_input.value:
-                    await self.results.update(f"Error: {e}")
+                    self.results.update(f"Error: {e}")
                 return
 
         # Make sure a new search hasn't started. This prevents race conditions with displaying
         # the search results by only updating the display if the search is still relavent.
         if search == self.search_input.value:
             markdown = self.make_word_markdown(results)
-            await self.results.update(markdown)
+            self.results.update(markdown)
 
     def make_word_markdown(self, results: SearchResults) -> str:
         lines = []
