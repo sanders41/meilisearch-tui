@@ -50,7 +50,7 @@ class MeilisearchSettings(Screen):
         results_box = self.query_one("#results", Markdown)
 
         if not self.selected_index:
-            await results_box.update("No index selected")
+            results_box.update("No index selected")
             return
 
         async with get_client() as client:
@@ -59,12 +59,12 @@ class MeilisearchSettings(Screen):
                 results = await index.get_settings()
             except Exception as e:
                 if current_index == self.selected_index:
-                    await results_box.update(f"Error: {e}")
+                    results_box.update(f"Error: {e}")
                 return
 
         if current_index == self.selected_index:
             markdown = self.make_word_markdown(current_index, results)
-            await results_box.update(markdown)
+            results_box.update(markdown)
 
     def make_word_markdown(self, index: str, results: MeilisearchSettingsResult) -> str:
         lines = []
