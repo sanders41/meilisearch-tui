@@ -3,6 +3,10 @@ $primary-darken-1: #21004b;
 $primary-lighten-1: #ad6de7;
 $secondary: #ff5caa;
 
+Screen {
+  overflow: hidden hidden;
+}
+
 Button {
   background: $primary;
   color: $secondary;
@@ -75,7 +79,6 @@ MarkdownH1 {
 
 .sidebar {
   background: $primary;
-  overflow: auto;
   width: auto;
   min-width: 30;
   height: 100%;
