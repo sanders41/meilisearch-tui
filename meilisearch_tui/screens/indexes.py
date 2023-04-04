@@ -31,7 +31,6 @@ class AddIndex(Widget):
         yield Static("Add index")
 
 
-# TABS = ("Add Index", "Update Index", "Delete Index", "Index Settings")
 class MeilisearchSettings(Widget):
     DEFAULT_CSS = """
     MeilisearchSettings {
@@ -123,10 +122,6 @@ class IndexScreen(Screen):
     def meilisearch_settings(self) -> MeilisearchSettings:
         return self.query_one(MeilisearchSettings)
 
-    # @cached_property
-    # def tabs(self) -> Tabs:
-    #    return self.query_one(Tabs)
-
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.body.visible = True
         self.generic_error.display = False
@@ -151,33 +146,6 @@ class IndexScreen(Screen):
         else:
             self.selected_index = None
             self.meilisearch_settings.selected_index = None
-
-    #         self.body.visible = True
-    #         self.generic_error.display = False
-    #         await self.index_sidebar.update()
-    #         try:
-    #             async with get_client() as client:
-    #                 indexes = await client.get_indexes()
-    #         except MeilisearchCommunicationError as e:
-    #             self.body.visible = False
-    #             self.generic_error.display = True
-    #             self.generic_error.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"  # type: ignore
-    #             return
-    #         except Exception as e:
-    #             self.body.visible = False
-    #             self.generic_error.display = True
-    #             self.generic_error.renderable = f"An error occured: {e}."  # type: ignore
-    #             return
-    #
-    #         if indexes:
-    #             self.index_name.update(f"Searching index: {indexes[0].uid}")
-    #             self.selected_index = self.index_sidebar.selected_index
-    #         else:
-    #             self.selected_index = None
-    #             self.index_name.update("No index selected")
-    #
-    #         self.search_input.focus()
-    #         self.load_more_button.visible = False
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         self.selected_index = self.index_sidebar.selected_index
