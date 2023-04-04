@@ -8,7 +8,7 @@
 A TUI (Text User Interface) for Managing and Searching with [Meilisearch](https://github.com/meilisearch/meilisearch)
 from the terminal.
 
-![Search](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/search.mp4)
+![Search](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/search.mov)
 ![Settings](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/settings.png)
 
 ## Installation
