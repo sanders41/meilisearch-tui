@@ -23,7 +23,7 @@ classifiers=[
 [tool.poetry.dependencies]
 python = "^3.8"
 meilisearch-python-async = "1.1.0"
-textual = "0.17.3"
+textual = "0.18.0"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
