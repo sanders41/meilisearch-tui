@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from functools import cached_property
 
 from meilisearch_python_async.models.settings import (
     MeilisearchSettings as MeilisearchSettingsResult,
@@ -21,6 +22,22 @@ class MeilisearchSettings(Screen):
         super().__init__(id=id, classes=classes)
         self.selected_index: str | None = None
 
+    @cached_property
+    def body(self) -> Container:
+        return self.query_one("#body", Container)
+
+    @cached_property
+    def generic_error(self) -> ErrorMessage:
+        return self.query_one("#generic-error", ErrorMessage)
+
+    @cached_property
+    def index_sidebar(self) -> IndexSidebar:
+        return self.query_one(IndexSidebar)
+
+    @cached_property
+    def results(self) -> Markdown:
+        return self.query_one("#results", Markdown)
+
     def compose(self) -> ComposeResult:
         yield ErrorMessage("", classes="message-centered", id="generic-error")
         yield IndexSidebar(classes="sidebar")
@@ -30,27 +47,22 @@ class MeilisearchSettings(Screen):
         yield Footer()
 
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
-        body_container = self.query_one("#body", Container)
-        error_message = self.query_one("#generic-error", ErrorMessage)
-        body_container.visible = True
-        error_message.display = False
-        index_sidebar = self.query_one(IndexSidebar)
-        await index_sidebar.update()
-        self.selected_index = index_sidebar.selected_index
+        self.body.visible = True
+        self.generic_error.display = False
+        await self.index_sidebar.update()
+        self.selected_index = self.index_sidebar.selected_index
         asyncio.create_task(self.load_indexes())
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
-        index_sidebar = self.query_one(IndexSidebar)
-        self.selected_index = index_sidebar.selected_index
+        self.selected_index = self.index_sidebar.selected_index
         asyncio.create_task(self.load_indexes())
 
     async def load_indexes(self) -> None:
         # save the selected index at the start to make sure it hasn't changed during the request
         current_index = self.selected_index
-        results_box = self.query_one("#results", Markdown)
 
         if not self.selected_index:
-            results_box.update("No index selected")
+            self.results.update("No index selected")
             return
 
         async with get_client() as client:
@@ -59,12 +71,12 @@ class MeilisearchSettings(Screen):
                 results = await index.get_settings()
             except Exception as e:
                 if current_index == self.selected_index:
-                    results_box.update(f"Error: {e}")
+                    self.results.update(f"Error: {e}")
                 return
 
         if current_index == self.selected_index:
             markdown = self.make_word_markdown(current_index, results)
-            results_box.update(markdown)
+            self.results.update(markdown)
 
     def make_word_markdown(self, index: str, results: MeilisearchSettingsResult) -> str:
         lines = []
