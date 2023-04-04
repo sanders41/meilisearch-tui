@@ -5,9 +5,11 @@
 [![PyPI version](https://badge.fury.io/py/meilisearch-tui.svg)](https://badge.fury.io/py/meilisearch-tui)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/meilisearch-tui?color=5cc141)](https://github.com/sanders41/meilisearch-tui)
 
-A TUI for Managing and Searching with [Meilisearch](https://github.com/meilisearch/meilisearch).
+A TUI (Text User Interface) for Managing and Searching with [Meilisearch](https://github.com/meilisearch/meilisearch)
+from the terminal.
 
-![Search](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/search.gif)
+![Search](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/search.mp4)
+![Settings](https://raw.githubusercontent.com/sanders41/meilisearch-tui/main/assets/settings.png)
 
 ## Installation
 
@@ -40,8 +42,8 @@ screen. Specifying an `Index` here will create the index if it does not already 
 that have already been created will show at the bottom of the screen. By default the first index
 will auto-populate the `Index` box.
 
-To search, enter the index you want to search on, by default the first index found will pre-populate
-the box. Then type the desired search.
+To search, click on the index in the sidebar you want to search on, by default the first index will
+be selected. Then type the desired search.
 
 ## Contributing
 
