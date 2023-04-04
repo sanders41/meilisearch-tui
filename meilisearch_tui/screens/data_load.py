@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+from functools import cached_property
 from pathlib import Path
 
 from meilisearch_python_async.errors import (
@@ -48,42 +49,82 @@ class DataLoadScreen(Screen):
             yield CurrentIndexes()
         yield Footer()
 
+    @cached_property
+    def body(self) -> Container:
+        return self.query_one("#body", Container)
+
+    @cached_property
+    def current_indexes(self) -> CurrentIndexes:
+        return self.query_one(CurrentIndexes)
+
+    @cached_property
+    def data_file(self) -> Input:
+        return self.query_one("#data-file", Input)
+
+    @cached_property
+    def data_file_error(self) -> Static:
+        return self.query_one("#data-file-error", Static)
+
+    @cached_property
+    def directory_tree(self) -> DirectoryTree:
+        return self.query_one("#tree-view", DirectoryTree)
+
+    @cached_property
+    def generic_error(self) -> ErrorMessage:
+        return self.query_one("#generic-error", ErrorMessage)
+
+    @cached_property
+    def index_button(self) -> Button:
+        return self.query_one("#index-button", Button)
+
+    @cached_property
+    def index_error(self) -> Static:
+        return self.query_one("#index-error", Static)
+
+    @cached_property
+    def index_name(self) -> Input:
+        return self.query_one("#index-name", Input)
+
+    @cached_property
+    def indexing_successful(self) -> Static:
+        return self.query_one("#indexing-successful", Static)
+
+    @cached_property
+    def indexing_error(self) -> Static:
+        return self.query_one("#indexing-error", Static)
+
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
-        body_container = self.query_one("#body")
-        error_message = self.query_one("#generic-error")
-        body_container.visible = True
-        error_message.display = False
-        index_name = self.query_one("#index-name", Input)
+        self.body.visible = True
+        self.generic_error.display = False
         try:
             async with get_client() as client:
                 indexes = await client.get_indexes()
         except MeilisearchCommunicationError as e:
-            body_container.visible = False
-            error_message.display = True
-            error_message.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"  # type: ignore
+            self.body.visible = False
+            self.generic_error.display = True
+            self.generic_error.renderable = f"An error occured: {e}.\nMake sure the Meilisearch server is running and accessable"  # type: ignore
             return
         except Exception as e:
-            body_container.visible = False
-            error_message.display = True
-            error_message.renderable = f"An error occured: {e}."  # type: ignore
+            self.body.visible = False
+            self.generic_error.display = True
+            self.generic_error.renderable = f"An error occured: {e}."  # type: ignore
             return
 
         if indexes:
-            index_name.value = indexes[0].uid
-            self.query_one(DirectoryTree).focus()
+            self.index_name.value = indexes[0].uid
+            self.directory_tree.focus()
         else:
-            index_name.focus()
+            self.index_name.focus()
 
-        await self.query_one(CurrentIndexes).update()
-        self.query_one("#indexing-successful", Static).visible = False
-        self.query_one("#indexing-error", Static).visible = False
+        await self.current_indexes.update()
+        self.indexing_successful.visible = False
+        self.indexing_error.visible = False
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
         """Called when the user click a file in the directory tree."""
         event.stop()
-        code_view = self.query_one("#data-file", Input)
         try:
-            code_view.value = event.path
+            self.data_file.value = event.path
         except Exception:
             raise
 
@@ -92,23 +133,24 @@ class DataLoadScreen(Screen):
         error = False
 
         if button_id == "index-button":
-            data_file = self.query_one("#data-file", Input).value
-            index_name = self.query_one("#index-name", Input).value
-
-            if not data_file or Path(data_file).suffix not in (".csv", ".json", ".jsonl"):
-                self.query_one("#data-file-error", Static).visible = True
+            if not self.data_file.value or Path(self.data_file.value).suffix not in (
+                ".csv",
+                ".json",
+                ".jsonl",
+            ):
+                self.data_file_error.visible = True
                 error = True
-            if not index_name:
-                self.query_one("#index-error", Static).visible = True
+            if not self.index_name.value:
+                self.index_error.visible = True
                 error = True
 
             if error:
                 return None
 
-            data_file_path = Path(data_file)
+            data_file_path = Path(self.data_file.value)
             try:
                 async with get_client() as client:
-                    index = client.index(index_name)
+                    index = client.index(self.index_name.value)
                     if data_file_path.suffix == ".json":
                         await index.add_documents_from_file_in_batches(data_file_path)
                     else:
@@ -123,21 +165,19 @@ class DataLoadScreen(Screen):
             except Exception as e:
                 asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
 
-        await self.query_one(CurrentIndexes).update()
+        await self.current_indexes.update()
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
-            self.query_one("#index-button", Button).press()
+            self.index_button.press()
 
     async def _success_message(self) -> None:
-        success = self.query_one("#indexing-successful", Static)
-        success.visible = True
+        self.indexing_successful.visible = True
         await asyncio.sleep(5)
-        success.visible = False
+        self.indexing_successful.visible = False
 
     async def _error_message(self, message: str) -> None:
-        error = self.query_one("#indexing-error", Static)
-        error.renderable = message
-        error.visible = True
+        self.indexing_error.renderable = message
+        self.indexing_error.visible = True
         await asyncio.sleep(5)
-        error.visible = False
+        self.indexing_error.visible = False
