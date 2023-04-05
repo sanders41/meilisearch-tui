@@ -269,4 +269,4 @@ class IndexScreen(Screen):
         self.meilisearch_settings.selected_index = self.index_sidebar.selected_index or ""
 
     async def on_add_index_index_added(self) -> None:
-        asyncio.create_task(self.index_sidebar.update())
+        await self.index_sidebar.update()
