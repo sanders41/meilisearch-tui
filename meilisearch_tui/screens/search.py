@@ -69,7 +69,7 @@ class SearchScreen(Screen):
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.body_container.visible = True
         self.generic_error.display = False
-        await self.index_sidebar.update()
+        asyncio.create_task(self.index_sidebar.update())
         self.search_input.value = ""
         self.results.update("")
         try:

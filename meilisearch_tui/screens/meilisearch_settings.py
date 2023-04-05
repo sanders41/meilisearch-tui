@@ -49,7 +49,7 @@ class MeilisearchSettings(Screen):
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.body.visible = True
         self.generic_error.display = False
-        await self.index_sidebar.update()
+        asyncio.create_task(self.index_sidebar.update())
         self.selected_index = self.index_sidebar.selected_index
         asyncio.create_task(self.load_indexes())
 
