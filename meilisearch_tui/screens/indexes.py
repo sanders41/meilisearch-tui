@@ -13,6 +13,7 @@ from meilisearch_python_async.models.settings import (
 from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, Container, Content
+from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widget import Widget
@@ -37,9 +38,17 @@ class AddIndex(Widget):
     AddIndex {
         height: auto;
     }
+    .hidden {
+        visibility: hidden;
+    }
     """
 
-    current_indexes: reactive[list[str]] = reactive([])
+    class IndexAdded(Message):
+        def __init__(self, added_index: str) -> None:
+            self.added_index = added_index
+            super().__init__()
+
+    added_index = reactive("")
 
     def compose(self) -> ComposeResult:
         yield InputWithLabel(
@@ -56,40 +65,47 @@ class AddIndex(Widget):
         )
         yield SuccessMessage(
             "Data successfully sent for indexing",
-            classes="message-centered",
+            classes="message-centered, hidden",
             id="indexing-successful",
         )
-        yield ErrorMessage("", classes="message-centered", id="indexing-error")
+        yield ErrorMessage("", classes="message-centered, hidden", id="indexing-error")
         with Center():
             yield Button("Save", id="save-button")
 
     @cached_property
     def generic_error(self) -> ErrorMessage:
-        return self.query_one("generic-error", ErrorMessage)
+        return self.query_one("#generic-error", ErrorMessage)
 
     @cached_property
     def index_name(self) -> Input:
-        return self.query_one("index-name", Input)
+        return self.query_one("#index-name", Input)
 
     @cached_property
     def index_name_error(self) -> Static:
-        return self.query_one("index-name-error", Static)
+        return self.query_one("#index-name-error", Static)
+
+    @cached_property
+    def indexing_error(self) -> ErrorMessage:
+        return self.query_one("#indexing-error", ErrorMessage)
 
     @cached_property
     def indexing_successful(self) -> SuccessMessage:
-        return self.query_one("indexing-successful", SuccessMessage)
+        return self.query_one("#indexing-successful", SuccessMessage)
 
     @cached_property
     def primary_key(self) -> Input:
-        return self.query_one("primary-key", Input)
+        return self.query_one("#primary-key", Input)
 
     @cached_property
     def save_button(self) -> Button:
-        return self.query_one("save-button", Button)
+        return self.query_one("#save-button", Button)
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.save_button.press()
+
+    def on_mount(self) -> None:
+        self.index_name.focus()
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
@@ -101,24 +117,20 @@ class AddIndex(Widget):
 
             try:
                 async with get_client() as client:
-                    asyncio.create_task(
-                        client.create_index(self.index_name.value, self.primary_key.value)
-                    )
+                    await client.create_index(self.index_name.value, self.primary_key.value)
+                self.added_index = self.index_name.value
                 asyncio.create_task(self._success_message())
             except MeilisearchError as e:
                 asyncio.create_task(self._error_message(f"{e}"))
             except Exception as e:
                 asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
 
-        try:
-            async with get_client() as client:
-                ...
-                # self.current_indexes = await client.get_indexes()
-        except MeilisearchError as e:
-            asyncio.create_task(self._error_message(f"{e}"))
-        except Exception:
-            ...
-            # current_indexes.update(f"Error: {e}")
+        self.index_name.value = ""
+        self.primary_key.value = ""
+        self.index_name.focus()
+
+    def watch_added_index(self) -> None:
+        self.post_message(AddIndex.IndexAdded(self.added_index))
 
     async def _success_message(self) -> None:
         self.indexing_successful.visible = True
@@ -208,6 +220,10 @@ class IndexScreen(Screen):
         yield Footer()
 
     @cached_property
+    def add_index(self) -> AddIndex:
+        return self.query_one(AddIndex)
+
+    @cached_property
     def body(self) -> Container:
         return self.query_one("#body", Container)
 
@@ -251,3 +267,6 @@ class IndexScreen(Screen):
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         self.selected_index = self.index_sidebar.selected_index
         self.meilisearch_settings.selected_index = self.index_sidebar.selected_index or ""
+
+    async def on_add_index_index_added(self) -> None:
+        asyncio.create_task(self.index_sidebar.update())
