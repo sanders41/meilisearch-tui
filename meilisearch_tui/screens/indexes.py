@@ -3,21 +3,33 @@ from __future__ import annotations
 import asyncio
 from functools import cached_property
 
-from meilisearch_python_async.errors import MeilisearchCommunicationError
+from meilisearch_python_async.errors import (
+    MeilisearchCommunicationError,
+    MeilisearchError,
+)
 from meilisearch_python_async.models.settings import (
     MeilisearchSettings as MeilisearchSettingsResult,
 )
 from textual import events
 from textual.app import ComposeResult
-from textual.containers import Container, Content
+from textual.containers import Center, Container, Content
 from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widget import Widget
-from textual.widgets import Footer, Markdown, Static, TabbedContent, TabPane
+from textual.widgets import (
+    Button,
+    Footer,
+    Input,
+    Markdown,
+    Static,
+    TabbedContent,
+    TabPane,
+)
 
 from meilisearch_tui.client import get_client
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
-from meilisearch_tui.widgets.messages import ErrorMessage
+from meilisearch_tui.widgets.input import InputWithLabel
+from meilisearch_tui.widgets.messages import ErrorMessage, SuccessMessage
 
 
 class AddIndex(Widget):
@@ -27,8 +39,97 @@ class AddIndex(Widget):
     }
     """
 
+    current_indexes: reactive[list[str]] = reactive([])
+
     def compose(self) -> ComposeResult:
-        yield Static("Add index")
+        yield InputWithLabel(
+            label="Index Name",
+            input_id="index-name",
+            input_placeholder="Required",
+            error_id="index-name-error",
+            error_message="Index name is required",
+        )
+        yield InputWithLabel(
+            label="Primary Key",
+            input_id="primary-key",
+            error_id="primary-key-error",
+        )
+        yield SuccessMessage(
+            "Data successfully sent for indexing",
+            classes="message-centered",
+            id="indexing-successful",
+        )
+        yield ErrorMessage("", classes="message-centered", id="indexing-error")
+        with Center():
+            yield Button("Save", id="save-button")
+
+    @cached_property
+    def generic_error(self) -> ErrorMessage:
+        return self.query_one("generic-error", ErrorMessage)
+
+    @cached_property
+    def index_name(self) -> Input:
+        return self.query_one("index-name", Input)
+
+    @cached_property
+    def index_name_error(self) -> Static:
+        return self.query_one("index-name-error", Static)
+
+    @cached_property
+    def indexing_successful(self) -> SuccessMessage:
+        return self.query_one("indexing-successful", SuccessMessage)
+
+    @cached_property
+    def primary_key(self) -> Input:
+        return self.query_one("primary-key", Input)
+
+    @cached_property
+    def save_button(self) -> Button:
+        return self.query_one("save-button", Button)
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "enter":
+            self.save_button.press()
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+
+        if button_id == "save-button":
+            if not self.index_name.value:
+                self.index_name_error.visible = True
+                return None
+
+            try:
+                async with get_client() as client:
+                    asyncio.create_task(
+                        client.create_index(self.index_name.value, self.primary_key.value)
+                    )
+                asyncio.create_task(self._success_message())
+            except MeilisearchError as e:
+                asyncio.create_task(self._error_message(f"{e}"))
+            except Exception as e:
+                asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+
+        try:
+            async with get_client() as client:
+                ...
+                # self.current_indexes = await client.get_indexes()
+        except MeilisearchError as e:
+            asyncio.create_task(self._error_message(f"{e}"))
+        except Exception:
+            ...
+            # current_indexes.update(f"Error: {e}")
+
+    async def _success_message(self) -> None:
+        self.indexing_successful.visible = True
+        await asyncio.sleep(5)
+        self.indexing_successful.visible = False
+
+    async def _error_message(self, message: str) -> None:
+        self.indexing_error.renderable = message
+        self.indexing_error.visible = True
+        await asyncio.sleep(5)
+        self.indexing_error.visible = False
 
 
 class MeilisearchSettings(Widget):
