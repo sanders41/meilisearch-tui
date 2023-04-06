@@ -73,10 +73,6 @@ class AddIndex(Widget):
             yield Button("Save", id="save-button")
 
     @cached_property
-    def generic_error(self) -> ErrorMessage:
-        return self.query_one("#generic-error", ErrorMessage)
-
-    @cached_property
     def index_name(self) -> Input:
         return self.query_one("#index-name", Input)
 
@@ -232,25 +228,13 @@ class MeilisearchSettings(Widget):
     """
     selected_index: reactive[str | None] = reactive(None)
 
-    @cached_property
-    def body(self) -> Container:
-        return self.query_one("#body", Container)
-
-    @cached_property
-    def generic_error(self) -> ErrorMessage:
-        return self.query_one("#generic-error", ErrorMessage)
-
-    @cached_property
-    def index_sidebar(self) -> IndexSidebar:
-        return self.query_one(IndexSidebar)
+    def compose(self) -> ComposeResult:
+        with Content(id="results-container"):
+            yield Markdown(id="results")
 
     @cached_property
     def results(self) -> Markdown:
         return self.query_one("#results", Markdown)
-
-    def compose(self) -> ComposeResult:
-        with Content(id="results-container"):
-            yield Markdown(id="results")
 
     async def watch_selected_index(self) -> None:
         asyncio.create_task(self.load_indexes())
