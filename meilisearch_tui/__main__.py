@@ -11,7 +11,6 @@ from meilisearch_tui.client import get_client
 from meilisearch_tui.config import Theme, load_config
 from meilisearch_tui.errors import NoMeilisearchUrlError
 from meilisearch_tui.screens.configuration import ConfigurationScreen
-from meilisearch_tui.screens.data_load import DataLoadScreen
 from meilisearch_tui.screens.indexes import IndexScreen
 from meilisearch_tui.screens.search import SearchScreen
 from meilisearch_tui.widgets.messages import ErrorMessage
@@ -27,7 +26,6 @@ class MeilisearchApp(App):
     BINDINGS = [
         ("ctrl+c", "quit", "Quit"),
         ("s", "push_screen('search')", "Search"),
-        ("d", "push_screen('data_load')", "Load Data"),
         ("i", "push_screen('index')", "Index Management"),
         ("c", "push_screen('configuration')", "Configuration"),
     ]
@@ -36,7 +34,6 @@ class MeilisearchApp(App):
     SCREENS = {
         "configuration": ConfigurationScreen(),
         "search": SearchScreen(),
-        "data_load": DataLoadScreen(),
         "index": IndexScreen(),
     }
 
