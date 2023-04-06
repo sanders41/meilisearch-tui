@@ -13,7 +13,7 @@ from meilisearch_python_async.models.settings import (
 )
 from textual import events
 from textual.app import ComposeResult
-from textual.containers import Center, Container, Content
+from textual.containers import Center, Container, Content, Horizontal
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import Screen
@@ -345,6 +345,180 @@ class DataLoad(Widget):
         self.data_load_error.visible = False
 
 
+class EditMeilisearchSettings(Widget):
+    DEFAULT_CSS = """
+    EditMeilisearchSettings {
+        height: auto;
+    }
+    Horizontal {
+        height: auto;
+        width: auto;
+    }
+    Button {
+        margin: 0 1;
+    }
+    """
+
+    settings_saved = reactive(False, layout=True)
+
+    class SettingsSaved(Message):
+        def __init__(self, settings_saved: bool) -> None:
+            self.settings_saved = settings_saved
+            super().__init__()
+
+    selected_index: reactive[str | None] = reactive(None)
+
+    def compose(self) -> ComposeResult:
+        yield InputWithLabel(
+            label="Synonyms",
+            input_id="synonyms-input",
+            input_placeholder='Example: {"car": ["vehicle", "automobile"]}',
+            error_id="synonyms-input-error",
+        )
+        yield InputWithLabel(
+            label="Stop Words",
+            input_id="stop-words-input",
+            input_placeholder='Example: ["a", "an", "the"]',
+            error_id="stop-words-input-error",
+        )
+        yield InputWithLabel(
+            label="Ranking Rules",
+            input_id="ranking-rules-input",
+            input_placeholder='Example: ["words", "typo", "proximity", "attribute", "sort", "exactness"]',
+            error_id="stop-words-input-error",
+        )
+        yield InputWithLabel(
+            label="Filterable Attributes",
+            input_id="filterable-attributes-input",
+            input_placeholder='Example: ["genres", "director", "release_date.year"]',
+            error_id="filterable-attributes-input-error",
+        )
+        yield InputWithLabel(
+            label="Distinct Attribute",
+            input_id="distinct-attribute-input",
+            input_placeholder="Example: movie_id",
+            error_id="distinct-attribute-input-error",
+        )
+        yield InputWithLabel(
+            label="Searchable Attributes",
+            input_id="searchable-attributes-input",
+            input_placeholder='Example: ["title", "overview"]',
+            error_id="searchable-attributes-input-error",
+        )
+        yield InputWithLabel(
+            label="Displayed Attributes",
+            input_id="displayed-attributes-input",
+            input_placeholder='Example: ["title", "overview"]',
+            error_id="displayed-attributes-input-error",
+        )
+        yield InputWithLabel(
+            label="Sortable Attributes",
+            input_id="sortable-attributes-input",
+            input_placeholder='Example: ["title", "release_date.year"]',
+            error_id="sortable-attributes-input-error",
+        )
+        yield InputWithLabel(
+            label="Typo Tolerance",
+            input_id="typo-tolerance-input",
+            input_placeholder='Example: {"enabled": true, "min_word_size_for_typos": {"one_typo": 5, "two_typos": 9}, "disable_on_words": [], "disable_on_attributes": []}',
+            error_id="typo-tolerance-input-error",
+        )
+        yield InputWithLabel(
+            label="Faceting",
+            input_id="faceting-input",
+            input_placeholder='Example: {"max_values_per_facet": 100}',
+            error_id="faceting-input-error",
+        )
+        yield InputWithLabel(
+            label="Patination",
+            input_id="pagination-input",
+            input_placeholder='Example: {"max_total_hits": 1000}',
+            error_id="pagination-input-error",
+        )
+        with Center():
+            with Horizontal():
+                yield Button("Save", id="save-settings-button")
+                yield Button("Cancel", id="cancel-button")
+
+    @cached_property
+    def synonyms_input(self) -> Input:
+        return self.query_one("#synonyms-input", Input)
+
+    @cached_property
+    def stop_words_input(self) -> Input:
+        return self.query_one("#stop-words-input", Input)
+
+    @cached_property
+    def ranking_rules_input(self) -> Input:
+        return self.query_one("#raning-rules-input", Input)
+
+    @cached_property
+    def filterable_attributes_input(self) -> Input:
+        return self.query_one("#filterable_attributes_input", Input)
+
+    @cached_property
+    def distinct_attribute_input(self) -> Input:
+        return self.query_one("#distinct-attribute-input", Input)
+
+    @cached_property
+    def searchable_attributes_input(self) -> Input:
+        return self.query_one("#searchable-attributes-input", Input)
+
+    @cached_property
+    def displayed_attributes_input(self) -> Input:
+        return self.query_one("#displayed-attributes-input", Input)
+
+    @cached_property
+    def sortable_attributes_input(self) -> Input:
+        return self.query_one("#sortable-attributes-input", Input)
+
+    @cached_property
+    def typo_tolerance_input(self) -> Input:
+        return self.query_one("#typo-tolerance-input", Input)
+
+    @cached_property
+    def faceting_input(self) -> Input:
+        return self.query_one("#faceting-input", Input)
+
+    @cached_property
+    def pagination_input(self) -> Input:
+        return self.query_one("#pagination-input", Input)
+
+    @cached_property
+    def save_button(self) -> Button:
+        return self.query_one("#save-settings-button", Button)
+
+    @cached_property
+    def cancel_button(self) -> Button:
+        return self.query_one("#cancel-button", Button)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+
+        if button_id == "save-settings-button":
+            self.settings_saved = True
+
+        if button_id == "cancel-button":
+            self.settings_saved = True
+
+    async def watch_selected_index(self) -> None:
+        if not self.selected_index:
+            return
+
+        async with get_client() as client:
+            index = client.index(self.selected_index)
+            results = await index.get_settings()
+
+        self.synonyms_input.value = str(results.synonyms)
+        self.synonyms_input.focus()
+
+    def watch_settings_saved(self) -> None:
+        if self.settings_saved:
+            self.post_message(EditMeilisearchSettings.SettingsSaved(True))
+
+        self.settings_saved = False
+
+
 class MeilisearchSettings(Widget):
     DEFAULT_CSS = """
     MeilisearchSettings {
@@ -352,18 +526,59 @@ class MeilisearchSettings(Widget):
     }
     """
 
-    selected_index: reactive[str | None] = reactive(None)
+    selected_index: reactive[str | None] = reactive(None, layout=True)
+    edit_view = reactive(False, layout=True)
 
     def compose(self) -> ComposeResult:
         with Content(id="results-container"):
             yield Markdown(id="results")
+            with Center():
+                yield Button("Edit Settings", id="edit-settings-button")
+        with Content(id="edit-settings"):
+            yield EditMeilisearchSettings()
 
     @cached_property
     def results(self) -> Markdown:
         return self.query_one("#results", Markdown)
 
+    @cached_property
+    def results_container(self) -> Content:
+        return self.query_one("#results-container", Content)
+
+    @cached_property
+    def edit_settings_button(self) -> Button:
+        return self.query_one("#edit-settings-button", Button)
+
+    @cached_property
+    def edit_settings_container(self) -> Content:
+        return self.query_one("#edit-settings", Content)
+
+    @cached_property
+    def edit_meilisearch_settings(self) -> EditMeilisearchSettings:
+        return self.query_one(EditMeilisearchSettings)
+
     async def watch_selected_index(self) -> None:
         asyncio.create_task(self.load_indexes())
+
+    def watch_edit_view(self) -> None:
+        if self.edit_view:
+            self.results_container.display = False
+            self.edit_settings_container.display = True
+        else:
+            self.results_container.display = True
+            self.edit_settings_container.display = False
+
+    def on_edit_meilisearch_settings_settings_saved(
+        self, event: EditMeilisearchSettings.SettingsSaved
+    ) -> None:
+        if event.settings_saved:
+            self.edit_view = False
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+
+        if button_id == "edit-settings-button":
+            self.edit_view = True
 
     async def load_indexes(self) -> None:
         # save the selected index at the start to make sure it hasn't changed during the request
@@ -392,7 +607,7 @@ class MeilisearchSettings(Widget):
         lines.append(f"# Settigns for {index} index")
 
         for k, v in results.dict().items():
-            lines.append(f"## {k}\n{v}\n")
+            lines.append(f"## {k.replace('_', ' ').title()}\n{v}\n")
 
         return "\n".join(lines)
 
