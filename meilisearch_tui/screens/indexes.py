@@ -450,11 +450,11 @@ class EditMeilisearchSettings(Widget):
 
     @cached_property
     def ranking_rules_input(self) -> Input:
-        return self.query_one("#raning-rules-input", Input)
+        return self.query_one("#ranking-rules-input", Input)
 
     @cached_property
     def filterable_attributes_input(self) -> Input:
-        return self.query_one("#filterable_attributes_input", Input)
+        return self.query_one("#filterable-attributes-input", Input)
 
     @cached_property
     def distinct_attribute_input(self) -> Input:
@@ -510,6 +510,14 @@ class EditMeilisearchSettings(Widget):
             results = await index.get_settings()
 
         self.synonyms_input.value = str(results.synonyms)
+        self.stop_words_input.value = str(results.stop_words)
+        self.ranking_rules_input.value = (
+            f"[{', '.join(results.ranking_rules)}]" if results.ranking_rules else "[]"
+        )
+        self.filterable_attributes_input.value = str(results.filterable_attributes)
+        self.distinct_attribute_input.value = results.distinct_attribute or ""
+        self.searchable_attributes_input.value = str(results.searchable_attributes)
+        self.typo_tolerance_input.value = str(results.typo_tolerance)
         self.synonyms_input.focus()
 
     def watch_settings_saved(self) -> None:
@@ -559,6 +567,7 @@ class MeilisearchSettings(Widget):
 
     async def watch_selected_index(self) -> None:
         asyncio.create_task(self.load_indexes())
+        self.edit_meilisearch_settings.selected_index = self.selected_index
 
     def watch_edit_view(self) -> None:
         if self.edit_view:
