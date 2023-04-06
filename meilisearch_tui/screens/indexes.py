@@ -144,6 +144,86 @@ class AddIndex(Widget):
         self.indexing_error.visible = False
 
 
+class DeleteIndex(Widget):
+    DEFAULT_CSS = """
+    DeleteIndex {
+        height: auto;
+    }
+    """
+
+    selected_index: reactive[str | None] = reactive(None)
+
+    class IndexDeleted(Message):
+        def __init__(self) -> None:
+            self.selected_index = None
+            super().__init__()
+
+    def compose(self) -> ComposeResult:
+        yield Static("No index selected", classes="message-centered bottom-spacer", id="index-name")
+        yield SuccessMessage(
+            "Index deleted",
+            classes="message-centered, hidden",
+            id="indexing-successful",
+        )
+        yield ErrorMessage("", classes="message-centered, hidden", id="indexing-error")
+        with Center():
+            yield Button("Delete Index", id="delete-button")
+
+    @cached_property
+    def index_name(self) -> Static:
+        return self.query_one("#index-name", Static)
+
+    @cached_property
+    def delete_button(self) -> Button:
+        return self.query_one("#delete-button", Button)
+
+    @cached_property
+    def indexing_error(self) -> ErrorMessage:
+        return self.query_one("#indexing-error", ErrorMessage)
+
+    @cached_property
+    def indexing_successful(self) -> SuccessMessage:
+        return self.query_one("#indexing-successful", SuccessMessage)
+
+    async def watch_selected_index(self) -> None:
+        if self.selected_index:
+            self.index_name.update(f"Index to delete: {self.selected_index}")
+        else:
+            self.index_name.update("No index selected")
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        button_id = event.button.id
+
+        if button_id == "delete-button":
+            if not self.selected_index:
+                self.selected_index = "No index selected"
+                return None
+
+            try:
+                async with get_client() as client:
+                    index = client.index(self.selected_index)
+                    await index.delete()
+                asyncio.create_task(self._success_message())
+            except MeilisearchError as e:
+                asyncio.create_task(self._error_message(f"{e}"))
+            except Exception as e:
+                asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+
+        self.selected_index = None
+        self.post_message(DeleteIndex.IndexDeleted())
+
+    async def _success_message(self) -> None:
+        self.indexing_successful.visible = True
+        await asyncio.sleep(5)
+        self.indexing_successful.visible = False
+
+    async def _error_message(self, message: str) -> None:
+        self.indexing_error.renderable = message
+        self.indexing_error.visible = True
+        await asyncio.sleep(5)
+        self.indexing_error.visible = False
+
+
 class MeilisearchSettings(Widget):
     DEFAULT_CSS = """
     MeilisearchSettings {
@@ -216,6 +296,8 @@ class IndexScreen(Screen):
                     yield MeilisearchSettings()
                 with TabPane("Add Index", id="add-index"):
                     yield AddIndex()
+                with TabPane("Delete Index", id="delete-index"):
+                    yield DeleteIndex()
         yield ErrorMessage("", classes="message-centered", id="generic-error")
         yield Footer()
 
@@ -226,6 +308,10 @@ class IndexScreen(Screen):
     @cached_property
     def body(self) -> Container:
         return self.query_one("#body", Container)
+
+    @cached_property
+    def delete_index(self) -> DeleteIndex:
+        return self.query_one(DeleteIndex)
 
     @cached_property
     def generic_error(self) -> ErrorMessage:
@@ -260,13 +346,19 @@ class IndexScreen(Screen):
         if indexes:
             self.selected_index = self.index_sidebar.selected_index
             self.meilisearch_settings.selected_index = self.selected_index
+            self.delete_index.selected_index = self.selected_index
         else:
             self.selected_index = None
             self.meilisearch_settings.selected_index = None
+            self.delete_index.selected_index = None
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         self.selected_index = self.index_sidebar.selected_index
         self.meilisearch_settings.selected_index = self.index_sidebar.selected_index or ""
+        self.delete_index.selected_index = self.index_sidebar.selected_index or None
 
     async def on_add_index_index_added(self) -> None:
+        await self.index_sidebar.update()
+
+    async def on_delete_index_index_deleted(self) -> None:
         await self.index_sidebar.update()
