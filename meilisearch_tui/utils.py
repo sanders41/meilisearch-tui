@@ -26,3 +26,10 @@ async def get_indexes() -> list[Index] | None:
         indexes = await client.get_indexes()
 
     return indexes
+
+
+def string_to_list(value: str | None) -> list[str] | None:
+    if value and value != "[]":
+        return [x.strip()[1:-1] for x in value[1:-1].split(",")]
+
+    return None

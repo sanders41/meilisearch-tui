@@ -1,6 +1,6 @@
 import pytest
 
-from meilisearch_tui.utils import get_current_indexes_string
+from meilisearch_tui.utils import get_current_indexes_string, string_to_list
 
 
 @pytest.mark.parametrize(
@@ -32,3 +32,18 @@ async def test_get_current_indexes_string_no_indexes():
     result = await get_current_indexes_string()
 
     assert result == "No indexes available"
+
+
+@pytest.mark.parametrize(
+    "val, expected",
+    [
+        ("['a', 'b']", ["a", "b"]),
+        ('["a", "b"]', ["a", "b"]),
+        ("[\"a', 'b']", ["a", "b"]),
+        ('["title"]', ["title"]),
+        ("[]", None),
+        (None, None),
+    ],
+)
+def test_string_to_list(val, expected):
+    assert string_to_list(val) == expected
