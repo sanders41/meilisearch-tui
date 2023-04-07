@@ -444,6 +444,7 @@ class EditMeilisearchSettings(Widget):
         with Center():
             with Horizontal():
                 yield Button("Save", id="save-settings-button")
+                yield Button("Reset to Default", id="reset-settings-button")
                 yield Button("Cancel", id="cancel-button")
         yield ErrorMessage(id="edit-settings-error")
 
@@ -494,6 +495,10 @@ class EditMeilisearchSettings(Widget):
     @cached_property
     def save_button(self) -> Button:
         return self.query_one("#save-settings-button", Button)
+
+    @cached_property
+    def reset_button(self) -> Button:
+        return self.query_one("#reset-settings-button", Button)
 
     @cached_property
     def cancel_button(self) -> Button:
@@ -548,7 +553,20 @@ class EditMeilisearchSettings(Widget):
                     index = client.index(self.selected_index)
                     await index.update_settings(settings)
             except Exception as e:
-                asyncio.create_task(self._error_message(f"An error accurred saving settings: {e}"))
+                asyncio.create_task(
+                    self._error_message(f"An error occurred saving the settings: {e}")
+                )
+                return
+
+        if button_id == "reset-settings-button" and self.selected_index:
+            try:
+                async with get_client() as client:
+                    index = client.index(self.selected_index)
+                    await index.reset_settings()
+            except Exception as e:
+                asyncio.create_task(
+                    self._error_message(f"An error occurred resetting the settings: {e}")
+                )
                 return
 
         asyncio.create_task(self._load_settings())
