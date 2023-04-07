@@ -37,10 +37,7 @@ The first time you start the app you will need to enter the server address and m
 one) into the configuration. If the `MEILI_HTTP_ADDR` and/or `MEILI_MASTER_KEY` environment variables
 are set, these values will be used for the `meilisearch_url` and `master_key`.
 
-If you have not already created an index and loaded data, this can be done from the `Load Data`
-screen. Specifying an `Index` here will create the index if it does not already exist. Indexes
-that have already been created will show at the bottom of the screen. By default the first index
-will auto-populate the `Index` box.
+If you have not already created an index and loaded data, first add an index on the Add Index tab of the Index Management screen. Then data can be loaded from the ‘Load Data` tab.
 
 To search, click on the index in the sidebar you want to search on, by default the first index will
 be selected. Then type the desired search.

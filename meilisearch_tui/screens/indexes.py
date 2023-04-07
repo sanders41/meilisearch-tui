@@ -68,7 +68,7 @@ class AddIndex(Widget):
             error_id="primary-key-error",
         )
         yield SuccessMessage(
-            "Data successfully sent for indexing",
+            "Index successfully created",
             classes="message-centered, hidden",
             id="indexing-successful",
         )
