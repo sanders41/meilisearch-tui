@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "meilisearch-tui"
-version = "0.5.0"
+version = "0.5.1"
 description = "A TUI for Managing and Searching with Meilisearch"
 authors = ["Paul Sanders <psanders1@gmail.com>"]
 license = "MIT"

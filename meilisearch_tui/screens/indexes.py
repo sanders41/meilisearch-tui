@@ -441,6 +441,10 @@ class IndexScreen(Screen):
     def meilisearch_settings(self) -> MeilisearchSettings:
         return self.query_one(MeilisearchSettings)
 
+    @cached_property
+    def tabbed_content(self) -> TabbedContent:
+        return self.query_one(TabbedContent)
+
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.body.visible = True
         self.generic_error.display = False
@@ -469,6 +473,7 @@ class IndexScreen(Screen):
             self.meilisearch_settings.selected_index = None
             self.delete_index.selected_index = None
             self.data_load.selected_index = None
+            self.tabbed_content.active = "add-index"
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         self.selected_index = self.index_sidebar.selected_index
