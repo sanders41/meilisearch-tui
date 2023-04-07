@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from functools import cached_property
 from pathlib import Path
 
@@ -9,7 +10,7 @@ from meilisearch_python_async.errors import (
     MeilisearchError,
 )
 from meilisearch_python_async.models.settings import (
-    MeilisearchSettings as MeilisearchSettingsResult,
+    MeilisearchSettings as MeilisearchSettingsInfo,
 )
 from textual import events
 from textual.app import ComposeResult
@@ -30,6 +31,7 @@ from textual.widgets import (
 )
 
 from meilisearch_tui.client import get_client
+from meilisearch_tui.utils import string_to_list
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
 from meilisearch_tui.widgets.input import InputWithLabel
 from meilisearch_tui.widgets.messages import ErrorMessage, SuccessMessage
@@ -350,6 +352,10 @@ class EditMeilisearchSettings(Widget):
     EditMeilisearchSettings {
         height: auto;
     }
+    ErrorMessage {
+        padding-top: 1;
+        text-align: center;
+    }
     Horizontal {
         height: auto;
         width: auto;
@@ -439,6 +445,7 @@ class EditMeilisearchSettings(Widget):
             with Horizontal():
                 yield Button("Save", id="save-settings-button")
                 yield Button("Cancel", id="cancel-button")
+        yield ErrorMessage(id="edit-settings-error")
 
     @cached_property
     def synonyms_input(self) -> Input:
@@ -492,14 +499,65 @@ class EditMeilisearchSettings(Widget):
     def cancel_button(self) -> Button:
         return self.query_one("#cancel-button", Button)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    @cached_property
+    def edit_settings_error(self) -> ErrorMessage:
+        return self.query_one("#edit-settings-error", ErrorMessage)
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
 
-        if button_id == "save-settings-button":
-            self.settings_saved = True
+        if button_id == "save-settings-button" and self.selected_index:
+            try:
+                synonyms = (
+                    json.loads(self.synonyms_input.value) if self.synonyms_input.value else None
+                )
+                stop_words = string_to_list(self.stop_words_input.value)
+                ranking_rules = string_to_list(self.ranking_rules_input.value)
+                filterable_attributes = string_to_list(self.filterable_attributes_input.value)
+                distinct_attribute = self.distinct_attribute_input.value or None
+                searchable_attributes = string_to_list(self.sortable_attributes_input.value)
+                typo_tolerance = (
+                    json.loads(self.typo_tolerance_input.value)
+                    if self.typo_tolerance_input.value
+                    else None
+                )
+                faceting = (
+                    json.loads(self.faceting_input.value) if self.faceting_input.value else None
+                )
+                pagination = (
+                    json.loads(self.pagination_input.value) if self.pagination_input.value else None
+                )
 
-        if button_id == "cancel-button":
-            self.settings_saved = True
+                settings = MeilisearchSettingsInfo(
+                    synonyms=synonyms,
+                    stop_words=stop_words,
+                    ranking_rules=ranking_rules,
+                    filterable_attributes=filterable_attributes,
+                    distinct_attribute=distinct_attribute,
+                    searchable_attributes=searchable_attributes,
+                    typo_tolerance=typo_tolerance,
+                    faceting=faceting,
+                    pagination=pagination,
+                )
+
+                async with get_client() as client:
+                    index = client.index(self.selected_index)
+                    await index.update_settings(settings)
+            except Exception as e:
+                asyncio.create_task(self._error_message(f"An error accurred saving settings: {e}"))
+                return
+
+        self.synonyms_input.value = ""
+        self.stop_words_input.value = ""
+        self.ranking_rules_input.value = ""
+        self.filterable_attributes_input.value = ""
+        self.distinct_attribute_input.value = ""
+        self.searchable_attributes_input.value = ""
+        self.typo_tolerance_input.value = ""
+        self.faceting_input.value = ""
+        self.pagination_input.value = ""
+
+        self.settings_saved = True
 
     async def watch_selected_index(self) -> None:
         if not self.selected_index:
@@ -509,15 +567,19 @@ class EditMeilisearchSettings(Widget):
             index = client.index(self.selected_index)
             results = await index.get_settings()
 
-        self.synonyms_input.value = str(results.synonyms)
+        self.synonyms_input.value = json.dumps(results.synonyms) if results.synonyms else "{}"
         self.stop_words_input.value = str(results.stop_words)
-        self.ranking_rules_input.value = (
-            f"[{', '.join(results.ranking_rules)}]" if results.ranking_rules else "[]"
-        )
+        self.ranking_rules_input.value = str(results.ranking_rules)
         self.filterable_attributes_input.value = str(results.filterable_attributes)
         self.distinct_attribute_input.value = results.distinct_attribute or ""
         self.searchable_attributes_input.value = str(results.searchable_attributes)
-        self.typo_tolerance_input.value = str(results.typo_tolerance)
+        self.displayed_attributes_input.value = str(results.displayed_attributes)
+        self.sortable_attributes_input.value = str(results.sortable_attributes)
+        self.typo_tolerance_input.value = (
+            results.typo_tolerance.json() if results.typo_tolerance else "{}"
+        )
+        self.faceting_input.value = results.faceting.json() if results.faceting else "{}"
+        self.pagination_input.value = results.pagination.json() if results.pagination else "{}"
         self.synonyms_input.focus()
 
     def watch_settings_saved(self) -> None:
@@ -525,6 +587,12 @@ class EditMeilisearchSettings(Widget):
             self.post_message(EditMeilisearchSettings.SettingsSaved(True))
 
         self.settings_saved = False
+
+    async def _error_message(self, message: str) -> None:
+        self.edit_settings_error.renderable = message
+        self.edit_settings_error.display = True
+        await asyncio.sleep(5)
+        self.edit_settings_error.display = False
 
 
 class MeilisearchSettings(Widget):
@@ -566,7 +634,7 @@ class MeilisearchSettings(Widget):
         return self.query_one(EditMeilisearchSettings)
 
     async def watch_selected_index(self) -> None:
-        asyncio.create_task(self.load_indexes())
+        asyncio.create_task(self.load_settings())
         self.edit_meilisearch_settings.selected_index = self.selected_index
 
     def watch_edit_view(self) -> None:
@@ -577,11 +645,12 @@ class MeilisearchSettings(Widget):
             self.results_container.display = True
             self.edit_settings_container.display = False
 
-    def on_edit_meilisearch_settings_settings_saved(
+    async def on_edit_meilisearch_settings_settings_saved(
         self, event: EditMeilisearchSettings.SettingsSaved
     ) -> None:
         if event.settings_saved:
             self.edit_view = False
+            asyncio.create_task(self.load_settings())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
@@ -589,7 +658,7 @@ class MeilisearchSettings(Widget):
         if button_id == "edit-settings-button":
             self.edit_view = True
 
-    async def load_indexes(self) -> None:
+    async def load_settings(self) -> None:
         # save the selected index at the start to make sure it hasn't changed during the request
         current_index = self.selected_index
 
@@ -607,10 +676,14 @@ class MeilisearchSettings(Widget):
                 return
 
         if current_index == self.selected_index:
-            markdown = self.make_word_markdown(current_index, results)
-            self.results.update(markdown)
+            if results:
+                markdown = self.make_word_markdown(current_index, results)
+                self.results.update(markdown)
+            else:
+                self.results.update("No indexes")
+                self.edit_settings_button.display = False
 
-    def make_word_markdown(self, index: str, results: MeilisearchSettingsResult) -> str:
+    def make_word_markdown(self, index: str, results: MeilisearchSettingsInfo) -> str:
         lines = []
 
         lines.append(f"# Settigns for {index} index")
@@ -665,6 +738,10 @@ class IndexScreen(Screen):
     def meilisearch_settings(self) -> MeilisearchSettings:
         return self.query_one(MeilisearchSettings)
 
+    @cached_property
+    def tabbed_content(self) -> TabbedContent:
+        return self.query_one(TabbedContent)
+
     async def on_screen_resume(self, event: events.ScreenResume) -> None:
         self.body.visible = True
         self.generic_error.display = False
@@ -693,6 +770,7 @@ class IndexScreen(Screen):
             self.meilisearch_settings.selected_index = None
             self.delete_index.selected_index = None
             self.data_load.selected_index = None
+            self.tabbed_content.active = "add-index"
 
     async def on_list_item__child_clicked(self, message: IndexSidebar.Selected) -> None:  # type: ignore[name-defined]
         self.selected_index = self.index_sidebar.selected_index

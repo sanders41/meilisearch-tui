@@ -54,7 +54,7 @@ class MeilisearchApp(App):
                 if indexes:
                     self.push_screen("search")
                 else:
-                    self.push_screen("data_load")
+                    self.push_screen("index")
             except NoMeilisearchUrlError:
                 self.push_screen("configuration")
             except MeilisearchCommunicationError as e:
