@@ -516,6 +516,8 @@ class EditMeilisearchSettings(Widget):
                 filterable_attributes = string_to_list(self.filterable_attributes_input.value)
                 distinct_attribute = self.distinct_attribute_input.value or None
                 searchable_attributes = string_to_list(self.sortable_attributes_input.value)
+                displayed_attributes = string_to_list(self.displayed_attributes_input.value)
+                sortable_attributes = string_to_list(self.sortable_attributes_input.value)
                 typo_tolerance = (
                     json.loads(self.typo_tolerance_input.value)
                     if self.typo_tolerance_input.value
@@ -535,6 +537,8 @@ class EditMeilisearchSettings(Widget):
                     filterable_attributes=filterable_attributes,
                     distinct_attribute=distinct_attribute,
                     searchable_attributes=searchable_attributes,
+                    displayed_attributes=displayed_attributes,
+                    sortable_attributes=sortable_attributes,
                     typo_tolerance=typo_tolerance,
                     faceting=faceting,
                     pagination=pagination,
@@ -547,19 +551,25 @@ class EditMeilisearchSettings(Widget):
                 asyncio.create_task(self._error_message(f"An error accurred saving settings: {e}"))
                 return
 
-        self.synonyms_input.value = ""
-        self.stop_words_input.value = ""
-        self.ranking_rules_input.value = ""
-        self.filterable_attributes_input.value = ""
-        self.distinct_attribute_input.value = ""
-        self.searchable_attributes_input.value = ""
-        self.typo_tolerance_input.value = ""
-        self.faceting_input.value = ""
-        self.pagination_input.value = ""
-
+        asyncio.create_task(self._load_settings())
         self.settings_saved = True
 
     async def watch_selected_index(self) -> None:
+        asyncio.create_task(self._load_settings())
+
+    def watch_settings_saved(self) -> None:
+        if self.settings_saved:
+            self.post_message(EditMeilisearchSettings.SettingsSaved(True))
+
+        self.settings_saved = False
+
+    async def _error_message(self, message: str) -> None:
+        self.edit_settings_error.renderable = message
+        self.edit_settings_error.display = True
+        await asyncio.sleep(5)
+        self.edit_settings_error.display = False
+
+    async def _load_settings(self) -> None:
         if not self.selected_index:
             return
 
@@ -581,18 +591,6 @@ class EditMeilisearchSettings(Widget):
         self.faceting_input.value = results.faceting.json() if results.faceting else "{}"
         self.pagination_input.value = results.pagination.json() if results.pagination else "{}"
         self.synonyms_input.focus()
-
-    def watch_settings_saved(self) -> None:
-        if self.settings_saved:
-            self.post_message(EditMeilisearchSettings.SettingsSaved(True))
-
-        self.settings_saved = False
-
-    async def _error_message(self, message: str) -> None:
-        self.edit_settings_error.renderable = message
-        self.edit_settings_error.display = True
-        await asyncio.sleep(5)
-        self.edit_settings_error.display = False
 
 
 class MeilisearchSettings(Widget):

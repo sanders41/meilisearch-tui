@@ -40,6 +40,7 @@ async def test_get_current_indexes_string_no_indexes():
         ("['a', 'b']", ["a", "b"]),
         ('["a", "b"]', ["a", "b"]),
         ("[\"a', 'b']", ["a", "b"]),
+        ('["title"]', ["title"]),
         ("[]", None),
         (None, None),
     ],
