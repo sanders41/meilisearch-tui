@@ -520,7 +520,7 @@ class EditMeilisearchSettings(Widget):
                 ranking_rules = string_to_list(self.ranking_rules_input.value)
                 filterable_attributes = string_to_list(self.filterable_attributes_input.value)
                 distinct_attribute = self.distinct_attribute_input.value or None
-                searchable_attributes = string_to_list(self.sortable_attributes_input.value)
+                searchable_attributes = string_to_list(self.searchable_attributes_input.value)
                 displayed_attributes = string_to_list(self.displayed_attributes_input.value)
                 sortable_attributes = string_to_list(self.sortable_attributes_input.value)
                 typo_tolerance = (
