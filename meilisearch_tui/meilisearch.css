@@ -99,6 +99,10 @@ ListView:focus > ListItem.--highlight {
   background: $secondary;
 }
 
+Underline > .underline--bar {
+  color: $secondary;
+}
+
 #tree-view {
   scrollbar-gutter: stable;
   overflow: auto;
