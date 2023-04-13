@@ -1,0 +1,13 @@
+[package]
+name = "meilisearch-tui"
+version = "0.6.1"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[lib]
+name = "meilisearch_tui"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.18.2", features = ["extension-module"] }
+titlecase = "2.2.1"

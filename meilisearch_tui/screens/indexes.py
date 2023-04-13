@@ -30,6 +30,7 @@ from textual.widgets import (
     TabPane,
 )
 
+from meilisearch_tui import settings_markdown
 from meilisearch_tui.client import get_client
 from meilisearch_tui.utils import string_to_list
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
@@ -693,21 +694,11 @@ class MeilisearchSettings(Widget):
 
         if current_index == self.selected_index:
             if results:
-                markdown = self.make_word_markdown(current_index, results)
+                markdown = settings_markdown(current_index, results.dict())
                 self.results.update(markdown)
             else:
                 self.results.update("No indexes")
                 self.edit_settings_button.display = False
-
-    def make_word_markdown(self, index: str, results: MeilisearchSettingsInfo) -> str:
-        lines = []
-
-        lines.append(f"# Settigns for {index} index")
-
-        for k, v in results.dict().items():
-            lines.append(f"## {k.replace('_', ' ').title()}\n{v}\n")
-
-        return "\n".join(lines)
 
 
 class IndexScreen(Screen):
