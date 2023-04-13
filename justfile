@@ -5,6 +5,10 @@
   just --justfile {{justfile()}} mypy
   echo ruff
   just --justfile {{justfile()}} ruff
+  echo fmt
+  just --justfile {{justfile()}} fmt
+  echo clippy
+  just --justfile {{justfile()}} clippy
 
 @black:
   poetry run black meilisearch_tui tests
@@ -14,6 +18,15 @@
 
 @ruff:
   poetry run ruff check .
+
+@clippy:
+  cargo clippy
+
+@fmt:
+  cargo fmt
+
+@check:
+  cargo check
 
 @test: start-meilisearch-detached && stop-meilisearch
   -poetry run pytest
