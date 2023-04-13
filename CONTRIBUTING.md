@@ -35,12 +35,15 @@ This creates the directory meilisearch-tui and connects your repository to the u
 
 ### Working with the code
 
-Note: This project uses Poetry to manage dependencies. If you do not already have Poetry installed you will need to install it with the instuctions [here](https://python-poetry.org/docs/#installation)
+Note: This project uses Poetry to manage dependencies. If you do not already have Poetry installed
+you will need to install it with the instuctions [here](https://python-poetry.org/docs/#installation)
+
+You will also need to have [rust](https://www.rust-lang.org/tools/install) installed.
 
 First the requirements need to be installed.
 
 ```sh
-poetry install
+just install
 ```
 
 ### Creating a branch
@@ -80,26 +83,23 @@ To see a full list of `just` commands run `just --list`
 meilisearch-tui uses [ruff](https://github.com/charliermarsh/ruff),
 [Black](https://github.com/psf/black), and [mypy](https://mypy.readthedocs.io/en/stable/) to ensure consistant code formmating.
 
-You can run linting on your code at any time with either directory or with `just`:
+You can run linting on your code at any time with `just`:
 
 ```sh
 # Run black
-poetry run black meilisearch_tui tests
-
-# Run black with just
 just black
 
 # Run ruff
-poetry run ruff check .
-
-# run ruff with just
 just ruff
 
 # Run mypy
-poetry run mypy .
-
-# Run mypy with just
 just mypy
+
+# Run clippy
+just clippy
+
+# Run Rust fmt
+just fmt
 
 # Just can also run all linting commands at once
 just lint
