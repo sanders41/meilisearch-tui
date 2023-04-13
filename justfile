@@ -28,6 +28,10 @@
 @check:
   cargo check
 
+@install:
+  poetry install
+  maturin develop
+
 @develop:
   maturin develop
 
