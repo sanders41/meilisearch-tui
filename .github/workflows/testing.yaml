@@ -5,8 +5,12 @@ on:
     branches:
     - main
   pull_request:
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  RUSTFLAGS: "-D warnings"
 jobs:
-  linting:
+  mypy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -40,6 +44,39 @@ jobs:
     - name: mypy check
       run: |
         poetry run mypy .
+
+  clippy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: clippy
+    - name: Cache dependencies
+      uses: Swatinem/rust-cache@v2.2.1
+    - name: Run cargo clippy
+      uses: actions-rs/cargo@v1
+      with:
+        command: clippy
+        args: --all-targets -- --deny warnings
+
+  rustfmt:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+        override: true
+        components: rustfmt
+    - name: Cache dependencies
+      uses: Swatinem/rust-cache@v2.2.1
+    - name: Run cargo fmt
+      run: cargo fmt --all -- --check
 
   testing:
     strategy:
@@ -76,6 +113,8 @@ jobs:
       run: timeout 10s poetry run pip --version || rm -rf .venv
     - name: Install Dependencies
       run: poetry install
+    - name: Rust build
+      run: maturin develop
     - name: MeiliSearch (latest version) setup with Docker
       run: docker run --rm -d -p 7700:7700 getmeili/meilisearch:latest meilisearch --no-analytics --master-key=masterKey
     - name: Test with pytest
