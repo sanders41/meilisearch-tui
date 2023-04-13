@@ -28,7 +28,10 @@
 @check:
   cargo check
 
-@test: start-meilisearch-detached && stop-meilisearch
+@develop:
+  maturin develop
+
+@test: develop start-meilisearch-detached && stop-meilisearch
   -poetry run pytest
 
 @start-meilisearch:
@@ -43,10 +46,10 @@
 @dev-cli:
   textual console
 
-@dev: start-meilisearch-detached && stop-meilisearch
+@dev: develop start-meilisearch-detached && stop-meilisearch
   -textual run --dev meilisearch_tui/__main__.py
 
-@dev-with-data: start-meilisearch-detached && stop-meilisearch
+@dev-with-data: develop start-meilisearch-detached && stop-meilisearch
   echo Loading data
   poetry run python scripts/load_data.py
   echo Loading data successful, starting TUI
