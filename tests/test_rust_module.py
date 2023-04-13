@@ -1,16 +1,19 @@
+import pytest
+
 from meilisearch_tui import search_markdown, settings_markdown
 
 
-def test_search_markdown():
+@pytest.mark.parametrize("estimated_total_hits, expected_hits", [(10, 10), (None, 0)])
+def test_search_markdown(estimated_total_hits, expected_hits):
     result = search_markdown(
-        estimated_total_hits=10,
+        estimated_total_hits=estimated_total_hits,
         processing_time_ms=1,
         hits=[{"id": 1, "title": "Test 1"}, {"id": 2, "title": "Test 2"}],
     )
 
     assert (
         result
-        == "## Hits: ~10 | Search time: 1\n\nid: 1\ntitle: Test 1\n-------------------------------\nid: 2\ntitle: Test 2\n-------------------------------"
+        == f"## Hits: ~{expected_hits} | Search time: 1\n\nid: 1\ntitle: Test 1\n-------------------------------\nid: 2\ntitle: Test 2\n-------------------------------"
     )
 
 
