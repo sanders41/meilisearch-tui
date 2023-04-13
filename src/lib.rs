@@ -4,14 +4,21 @@ use titlecase::titlecase;
 
 #[pyfunction]
 fn search_markdown(
-    estimated_total_hits: usize,
     processing_time_ms: usize,
+    estimated_total_hits: Option<usize>,
     hits: Option<&PyList>,
 ) -> PyResult<String> {
     let mut lines = Vec::new();
+    let total_hits: usize;
+
+    if let Some(hits) = estimated_total_hits {
+        total_hits = hits;
+    } else {
+        total_hits = 0;
+    }
 
     lines.push(format!(
-        "## Hits: ~{estimated_total_hits} | Search time: {processing_time_ms}\n"
+        "## Hits: ~{total_hits} | Search time: {processing_time_ms}\n"
     ));
 
     if let Some(h) = hits {
@@ -46,7 +53,7 @@ fn settings_markdown(index: &str, results: &PyDict) -> PyResult<String> {
 }
 
 #[pymodule]
-fn _meilisearch_tui(_py: Python, m: &PyModule) -> PyResult<()> {
+fn meilisearch_tui(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(search_markdown, m)?)?;
     m.add_function(wrap_pyfunction!(settings_markdown, m)?)?;
     Ok(())

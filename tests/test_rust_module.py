@@ -1,4 +1,4 @@
-from _meilisearch_tui import search_markdown, settings_markdown
+from meilisearch_tui import search_markdown, settings_markdown
 
 
 def test_search_markdown():

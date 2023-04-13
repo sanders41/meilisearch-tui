@@ -149,4 +149,4 @@ class SearchScreen(Screen):
             self.load_more_button.visible = False
 
         hits = results.hits if results.hits != [] else None
-        return search_markdown(results.estimated_total_hits, results.processing_time_ms, hits=hits)
+        return search_markdown(results.processing_time_ms, results.estimated_total_hits, hits=hits)
