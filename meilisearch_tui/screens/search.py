@@ -11,7 +11,7 @@ from textual.containers import Center, Container, Content
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Markdown, Static
 
-from meilisearch_tui import search_markdown
+from meilisearch_tui._meilisearch_tui import search_markdown
 from meilisearch_tui.client import get_client
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
 from meilisearch_tui.widgets.messages import ErrorMessage

@@ -53,7 +53,7 @@ fn settings_markdown(index: &str, results: &PyDict) -> PyResult<String> {
 }
 
 #[pymodule]
-fn meilisearch_tui(_py: Python, m: &PyModule) -> PyResult<()> {
+fn _meilisearch_tui(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(search_markdown, m)?)?;
     m.add_function(wrap_pyfunction!(settings_markdown, m)?)?;
     Ok(())

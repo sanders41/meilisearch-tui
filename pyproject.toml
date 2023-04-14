@@ -46,6 +46,10 @@ build-backend = "maturin"
 [tool.poetry.scripts]
 meilisearch = "meilisearch_tui.__main__:main"
 
+[tool.maturin]
+module-name = "meilisearch_tui._meilisearch_tui"
+bindings = 'pyo3'
+
 [tool.black]
 line-length = 100
 include = '\.pyi?$'
