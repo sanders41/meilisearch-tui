@@ -44,7 +44,7 @@ requires = ["maturin>=0.14,<0.15"]
 build-backend = "maturin"
 
 [tool.poetry.scripts]
-meilisearch = "meilisearch_tui.__main__:main"
+meilisearch = "meilisearch_tui.main:main"
 
 [tool.maturin]
 module-name = "meilisearch_tui._meilisearch_tui"
