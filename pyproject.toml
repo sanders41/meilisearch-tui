@@ -82,6 +82,7 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--cov=meilisearch_tui --cov-report term-missing"
+markers = ["meilisearch"]
 asyncio_mode = "auto"
 
 [tool.coverage.report]
