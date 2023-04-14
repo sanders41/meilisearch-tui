@@ -36,7 +36,7 @@ pytest = "7.3.0"
 pytest-asyncio = "0.21.0"
 pytest-cov = "4.0.0"
 ruff = "0.0.261"
-tox = "4.4.11"
+tox = "4.4.12"
 maturin = "0.14.17"
 
 [build-system]
