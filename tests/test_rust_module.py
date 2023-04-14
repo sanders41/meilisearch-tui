@@ -1,6 +1,6 @@
 import pytest
 
-from meilisearch_tui import search_markdown, settings_markdown
+from meilisearch_tui._meilisearch_tui import search_markdown, settings_markdown
 
 
 @pytest.mark.parametrize("estimated_total_hits, expected_hits", [(10, 10), (None, 0)])

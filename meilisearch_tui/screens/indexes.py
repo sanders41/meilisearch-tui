@@ -30,7 +30,7 @@ from textual.widgets import (
     TabPane,
 )
 
-from meilisearch_tui import settings_markdown
+from meilisearch_tui._meilisearch_tui import settings_markdown
 from meilisearch_tui.client import get_client
 from meilisearch_tui.utils import string_to_list
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
