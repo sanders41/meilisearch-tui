@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from functools import cached_property
 
+from aiocache import cached
 from meilisearch_python_async.errors import MeilisearchCommunicationError
 from meilisearch_python_async.models.search import SearchResults
 from textual import events
@@ -117,6 +118,7 @@ class SearchScreen(Screen):
             self.limit += 20
             asyncio.create_task(self.search(self.search_input.value))
 
+    @cached(ttl=10)
     async def search(self, search: str) -> None:
         if not self.selected_index and search == self.search_input.value:
             self.results.update("Error: No index provided")
