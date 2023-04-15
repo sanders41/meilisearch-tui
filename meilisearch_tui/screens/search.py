@@ -105,7 +105,7 @@ class SearchScreen(Screen):
     async def on_input_changed(self, message: Input.Changed) -> None:
         self.limit = 20
         if message.value:
-            asyncio.create_task(self.lookup_word(message.value))
+            asyncio.create_task(self.search(message.value))
         else:
             self.results.update("")
             self.load_more_button.visible = False
@@ -115,9 +115,9 @@ class SearchScreen(Screen):
 
         if button_id == "load-more-button":
             self.limit += 20
-            asyncio.create_task(self.lookup_word(self.search_input.value))
+            asyncio.create_task(self.search(self.search_input.value))
 
-    async def lookup_word(self, search: str) -> None:
+    async def search(self, search: str) -> None:
         if not self.selected_index and search == self.search_input.value:
             self.results.update("Error: No index provided")
             return
