@@ -11,7 +11,6 @@ from textual.containers import Center, Container, Content
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Markdown, Static
 
-from meilisearch_tui._meilisearch_tui import search_markdown
 from meilisearch_tui.client import get_client
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
 from meilisearch_tui.widgets.messages import ErrorMessage
@@ -143,10 +142,22 @@ class SearchScreen(Screen):
             self.results.update(markdown)
 
     def make_word_markdown(self, results: SearchResults) -> str:
+        lines = []
+
         if results.estimated_total_hits and results.estimated_total_hits > len(results.hits):
             self.load_more_button.visible = True
         else:
             self.load_more_button.visible = False
 
-        hits = results.hits if results.hits != [] else None
-        return search_markdown(results.processing_time_ms, results.estimated_total_hits, hits=hits)
+        lines.append(
+            f"## Hits: ~{results.estimated_total_hits} | Search time: {results.processing_time_ms} ms"
+        )
+
+        if results.hits:
+            for hit in results.hits:
+                for k, v in hit.items():
+                    lines.append(f"{k}: {v}\n")
+                lines.append("-------------------------------")
+            return "\n".join(lines)
+
+        return "No results found"

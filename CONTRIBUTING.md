@@ -38,8 +38,6 @@ This creates the directory meilisearch-tui and connects your repository to the u
 Note: This project uses Poetry to manage dependencies. If you do not already have Poetry installed
 you will need to install it with the instuctions [here](https://python-poetry.org/docs/#installation)
 
-You will also need to have [rust](https://www.rust-lang.org/tools/install) installed.
-
 First the requirements need to be installed.
 
 ```sh
@@ -94,12 +92,6 @@ just ruff
 
 # Run mypy
 just mypy
-
-# Run clippy
-just clippy
-
-# Run Rust fmt
-just fmt
 
 # Just can also run all linting commands at once
 just lint

@@ -36,19 +36,14 @@ pytest = "7.3.0"
 pytest-asyncio = "0.21.0"
 pytest-cov = "4.0.0"
 ruff = "0.0.261"
-tox = "4.4.12"
-maturin = "0.14.17"
+tox = "4.4.11"
 
 [build-system]
-requires = ["maturin>=0.14,<0.15"]
-build-backend = "maturin"
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-meilisearch = "meilisearch_tui.main:main"
-
-[tool.maturin]
-module-name = "meilisearch_tui._meilisearch_tui"
-bindings = 'pyo3'
+meilisearch = "meilisearch_tui.__main__:main"
 
 [tool.black]
 line-length = 100
@@ -82,7 +77,6 @@ disallow_untyped_defs = false
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--cov=meilisearch_tui --cov-report term-missing"
-markers = ["meilisearch"]
 asyncio_mode = "auto"
 
 [tool.coverage.report]
