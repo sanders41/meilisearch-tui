@@ -24,7 +24,7 @@ python = "^3.8"
 meilisearch-python-async = "1.2.0"
 textual = "0.20.1"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
-aiocache = "0.12.0"
+aiocache = "0.12.1"
 
 [tool.poetry.group.dev.dependencies]
 aiohttp = "3.8.4"
