@@ -14,7 +14,7 @@ from meilisearch_python_async.models.settings import (
 )
 from textual import events
 from textual.app import ComposeResult
-from textual.containers import Center, Container, Content, Horizontal
+from textual.containers import Center, Container, Horizontal, VerticalScroll
 from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import Screen
@@ -622,11 +622,11 @@ class MeilisearchSettings(Widget):
     edit_view = reactive(False, layout=True)
 
     def compose(self) -> ComposeResult:
-        with Content(id="results-container"):
+        with VerticalScroll(id="results-container"):
             yield Markdown(id="results")
             with Center():
                 yield Button("Edit Settings", id="edit-settings-button")
-        with Content(id="edit-settings"):
+        with VerticalScroll(id="edit-settings"):
             yield EditMeilisearchSettings()
 
     @cached_property
@@ -634,16 +634,16 @@ class MeilisearchSettings(Widget):
         return self.query_one("#results", Markdown)
 
     @cached_property
-    def results_container(self) -> Content:
-        return self.query_one("#results-container", Content)
+    def results_container(self) -> VerticalScroll:
+        return self.query_one("#results-container", VerticalScroll)
 
     @cached_property
     def edit_settings_button(self) -> Button:
         return self.query_one("#edit-settings-button", Button)
 
     @cached_property
-    def edit_settings_container(self) -> Content:
-        return self.query_one("#edit-settings", Content)
+    def edit_settings_container(self) -> VerticalScroll:
+        return self.query_one("#edit-settings", VerticalScroll)
 
     @cached_property
     def edit_meilisearch_settings(self) -> EditMeilisearchSettings:
