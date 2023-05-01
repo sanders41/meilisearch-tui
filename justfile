@@ -35,10 +35,10 @@
   textual console
 
 @dev: start-meilisearch-detached && stop-meilisearch
-  -textual run --dev meilisearch_tui/main.py
+  -textual run --dev -c meilisearch
 
 @dev-with-data: start-meilisearch-detached && stop-meilisearch
   echo Loading data
   poetry run python scripts/load_data.py
   echo Loading data successful, starting TUI
-  -textual run --dev meilisearch_tui/main.py
+  -textual run --dev -c meilisearch
