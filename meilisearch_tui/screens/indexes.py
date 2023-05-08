@@ -290,7 +290,7 @@ class DataLoad(Widget):
         """Called when the user click a file in the directory tree."""
         event.stop()
         try:
-            self.data_file.value = event.path
+            self.data_file.value = str(event.path)
         except Exception:
             raise
 
