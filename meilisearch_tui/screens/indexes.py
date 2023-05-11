@@ -614,7 +614,8 @@ class EditMeilisearchSettings(Widget):
 class MeilisearchSettings(Widget):
     DEFAULT_CSS = """
     MeilisearchSettings {
-        height: 90;
+        height: 108;
+        width: 100%;
     }
     """
 
@@ -622,20 +623,21 @@ class MeilisearchSettings(Widget):
     edit_view = reactive(False, layout=True)
 
     def compose(self) -> ComposeResult:
-        with VerticalScroll(id="results-container"):
-            yield Markdown(id="results")
-            with Center():
-                yield Button("Edit Settings", id="edit-settings-button")
-        with VerticalScroll(id="edit-settings"):
-            yield EditMeilisearchSettings()
+        with Container(id="results-container"):
+            with Container(id="view-settings"):
+                yield Markdown(id="results")
+                with Center():
+                    yield Button("Edit Settings", id="edit-settings-button")
+            with VerticalScroll(id="edit-settings"):
+                yield EditMeilisearchSettings()
 
     @cached_property
     def results(self) -> Markdown:
         return self.query_one("#results", Markdown)
 
     @cached_property
-    def results_container(self) -> VerticalScroll:
-        return self.query_one("#results-container", VerticalScroll)
+    def view_settings(self) -> Container:
+        return self.query_one("#view-settings", Container)
 
     @cached_property
     def edit_settings_button(self) -> Button:
@@ -655,10 +657,10 @@ class MeilisearchSettings(Widget):
 
     def watch_edit_view(self) -> None:
         if self.edit_view:
-            self.results_container.display = False
+            self.view_settings.display = False
             self.edit_settings_container.display = True
         else:
-            self.results_container.display = True
+            self.view_settings.display = True
             self.edit_settings_container.display = False
 
     async def on_edit_meilisearch_settings_settings_saved(
@@ -713,7 +715,7 @@ class MeilisearchSettings(Widget):
 class IndexScreen(Screen):
     def compose(self) -> ComposeResult:
         yield IndexSidebar(classes="sidebar")
-        with Container(id="body"):
+        with VerticalScroll(id="body"):
             with TabbedContent(initial="index-settings"):
                 with TabPane("Index Settings", id="index-settings"):
                     yield MeilisearchSettings()
@@ -731,8 +733,8 @@ class IndexScreen(Screen):
         return self.query_one(AddIndex)
 
     @cached_property
-    def body(self) -> Container:
-        return self.query_one("#body", Container)
+    def body(self) -> VerticalScroll:
+        return self.query_one("#body", VerticalScroll)
 
     @cached_property
     def data_load(self) -> DataLoad:
