@@ -8,7 +8,7 @@ from meilisearch_python_async.errors import MeilisearchCommunicationError
 from meilisearch_python_async.models.search import SearchResults
 from textual import events
 from textual.app import ComposeResult
-from textual.containers import Center, Container, VerticalScroll
+from textual.containers import Center, VerticalScroll
 from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Markdown, Static
 
@@ -26,7 +26,7 @@ class SearchScreen(Screen):
     def compose(self) -> ComposeResult:
         yield ErrorMessage("", classes="message-centered", id="generic-error")
         yield IndexSidebar(classes="sidebar")
-        with Container(id="body"):
+        with VerticalScroll(id="body"):
             yield Static("No index selected", id="index-name", classes="bottom-spacer")
             yield Input(placeholder="Search", classes="bottom-spacer", id="search")
             with VerticalScroll(id="results-container"):
@@ -36,8 +36,8 @@ class SearchScreen(Screen):
         yield Footer()
 
     @cached_property
-    def body_container(self) -> Container:
-        return self.query_one("#body", Container)
+    def body_container(self) -> VerticalScroll:
+        return self.query_one("#body", VerticalScroll)
 
     @cached_property
     def generic_error(self) -> ErrorMessage:
