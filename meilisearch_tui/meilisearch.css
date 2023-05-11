@@ -120,7 +120,7 @@ Underline > .underline--bar {
 #results-container {
   background: $background 50%;
   margin: 0 0 1 0;
-  height: 100%;
+  height: 84%;
   overflow: hidden auto;
   border: tall $background;
   scrollbar-color: $primary-lighten-1;
