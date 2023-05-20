@@ -66,9 +66,9 @@ class ConfigurationScreen(Screen):
             else:
                 try:
                     config.save()
-                    asyncio.create_task(self._success_message())
+                    await self._success_message()
                 except Exception as e:
-                    asyncio.create_task(self._error_message(f"{e}"))
+                    await self._error_message(f"{e}")
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":

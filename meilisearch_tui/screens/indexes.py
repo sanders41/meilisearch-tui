@@ -119,11 +119,11 @@ class AddIndex(Widget):
                 async with get_client() as client:
                     await client.create_index(self.index_name.value, self.primary_key.value)
                 self.added_index = self.index_name.value
-                asyncio.create_task(self._success_message())
+                await self._success_message()
             except MeilisearchError as e:
-                asyncio.create_task(self._error_message(f"{e}"))
+                await self._error_message(f"{e}")
             except Exception as e:
-                asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+                await self._error_message(f"An unknown error occured error: {e}")
 
         self.index_name.value = ""
         self.primary_key.value = ""
@@ -205,11 +205,11 @@ class DeleteIndex(Widget):
                 async with get_client() as client:
                     index = client.index(self.selected_index)
                     await index.delete()
-                asyncio.create_task(self._success_message())
+                await self._success_message()
             except MeilisearchError as e:
-                asyncio.create_task(self._error_message(f"{e}"))
+                await self._error_message(f"{e}")
             except Exception as e:
-                asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+                await self._error_message(f"An unknown error occured error: {e}")
 
         self.selected_index = None
         self.post_message(DeleteIndex.IndexDeleted())
@@ -317,11 +317,11 @@ class DataLoad(Widget):
                         await index.add_documents_from_file_in_batches(data_file_path)
                     else:
                         await index.add_documents_from_raw_file(data_file_path)
-                asyncio.create_task(self._success_message())
+                await self._success_message()
             except MeilisearchError as e:
-                asyncio.create_task(self._error_message(f"{e}"))
+                await self._error_message(f"{e}")
             except Exception as e:
-                asyncio.create_task(self._error_message(f"An unknown error occured error: {e}"))
+                await self._error_message(f"An unknown error occured error: {e}")
 
         self.data_file.value = ""
 
@@ -553,9 +553,7 @@ class EditMeilisearchSettings(Widget):
                     index = client.index(self.selected_index)
                     await index.update_settings(settings)
             except Exception as e:
-                asyncio.create_task(
-                    self._error_message(f"An error occurred saving the settings: {e}")
-                )
+                await self._error_message(f"An error occurred saving the settings: {e}")
                 return
 
         if button_id == "reset-settings-button" and self.selected_index:
@@ -564,16 +562,14 @@ class EditMeilisearchSettings(Widget):
                     index = client.index(self.selected_index)
                     await index.reset_settings()
             except Exception as e:
-                asyncio.create_task(
-                    self._error_message(f"An error occurred resetting the settings: {e}")
-                )
+                await self._error_message(f"An error occurred resetting the settings: {e}")
                 return
 
-        asyncio.create_task(self._load_settings())
+        await self._load_settings()
         self.settings_saved = True
 
     async def watch_selected_index(self) -> None:
-        asyncio.create_task(self._load_settings())
+        await self._load_settings()
 
     def watch_settings_saved(self) -> None:
         if self.settings_saved:
@@ -652,7 +648,7 @@ class MeilisearchSettings(Widget):
         return self.query_one(EditMeilisearchSettings)
 
     async def watch_selected_index(self) -> None:
-        asyncio.create_task(self.load_settings())
+        await self.load_settings()
         self.edit_meilisearch_settings.selected_index = self.selected_index
 
     def watch_edit_view(self) -> None:
@@ -668,7 +664,7 @@ class MeilisearchSettings(Widget):
     ) -> None:
         if event.settings_saved:
             self.edit_view = False
-            asyncio.create_task(self.load_settings())
+            await self.load_settings()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
