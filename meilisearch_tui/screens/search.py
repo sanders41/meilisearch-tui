@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from functools import cached_property
 
 from aiocache import cached
@@ -106,7 +105,7 @@ class SearchScreen(Screen):
     async def on_input_changed(self, message: Input.Changed) -> None:
         self.limit = 20
         if message.value:
-            asyncio.create_task(self.search(message.value))
+            await self.search(message.value)
         else:
             self.results.update("")
             self.load_more_button.visible = False
@@ -116,7 +115,7 @@ class SearchScreen(Screen):
 
         if button_id == "load-more-button":
             self.limit += 20
-            asyncio.create_task(self.search(self.search_input.value))
+            await self.search(self.search_input.value)
 
     @cached(ttl=10)
     async def search(self, search: str) -> None:
