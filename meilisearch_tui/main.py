@@ -24,10 +24,10 @@ def _is_uvloop_platform() -> bool:  # pragma: no cover
 
 class MeilisearchApp(App):
     BINDINGS = [
-        ("ctrl+c", "quit", "Quit"),
         ("s", "push_screen('search')", "Search"),
         ("i", "push_screen('index')", "Index Management"),
         ("c", "push_screen('configuration')", "Configuration"),
+        ("ctrl+q", "app.quit", "Quit"),
     ]
     CSS_PATH = "meilisearch.css"
     TITLE = "Meilisearch"
