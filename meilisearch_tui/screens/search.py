@@ -163,8 +163,12 @@ class SearchScreen(Screen):
 
         if results.hits:
             for hit in results.hits:
-                for k, v in hit["_formatted"].items():
-                    lines.append(f"{k}: {v}\n")
+                if hit.get("_formatted"):
+                    for k, v in hit["_formatted"].items():
+                        lines.append(f"{k}: {v}\n")
+                else:
+                    for k, v in hit.items():
+                        lines.append(f"{k}: {v}\n")
                 lines.append("-------------------------------")
             return "\n".join(lines)
 
