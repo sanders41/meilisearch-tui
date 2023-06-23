@@ -28,6 +28,8 @@ class SearchScreen(Screen):
         with VerticalScroll(id="body"):
             yield Static("No index selected", id="index-name", classes="bottom-spacer")
             yield Input(placeholder="Search", classes="bottom-spacer", id="search")
+            with Center():
+                yield Button(label="Clear Search Box", classes="bottom-spacer", id="clear-search")
             with VerticalScroll(id="results-container"):
                 yield Markdown(id="results")
             with Center():
@@ -53,6 +55,10 @@ class SearchScreen(Screen):
     @cached_property
     def search_input(self) -> Input:
         return self.query_one("#search", Input)
+
+    @cached_property
+    def clear_search(self) -> Button:
+        return self.query_one("#clear-search", Button)
 
     @cached_property
     def results_container(self) -> VerticalScroll:
@@ -116,6 +122,10 @@ class SearchScreen(Screen):
         if button_id == "load-more-button":
             self.limit += 20
             await self.search(self.search_input.value)
+
+        if button_id == "clear-search":
+            self.search_input.value = ""
+            self.search_input.focus()
 
     @cached(ttl=10)
     async def search(self, search: str) -> None:
