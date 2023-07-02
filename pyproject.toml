@@ -21,7 +21,7 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.8"
-meilisearch-python-async = "1.4.2"
+meilisearch-python-async = "1.4.3"
 textual = "0.28.1"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 aiocache = "0.12.1"
@@ -81,6 +81,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "--cov=meilisearch_tui --cov-report term-missing"
+markers = ["meilisearch"]
 asyncio_mode = "auto"
 
 [tool.coverage.report]
