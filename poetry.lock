@@ -1497,6 +1497,24 @@ rich = ">=13.3.3"
 typing-extensions = ">=4.4.0,<5.0.0"
 
 [[package]]
+name = "textual-dev"
+version = "1.0.1"
+description = "Development tools for working with Textual"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "textual_dev-1.0.1-py3-none-any.whl", hash = "sha256:419fc426c120f04f89ab0cb1aa88f7873dd7cdb9c21618e709175c8eaff6b566"},
+    {file = "textual_dev-1.0.1.tar.gz", hash = "sha256:9f4c40655cbb56af7ee92805ef14fa24ae98ff8b0ae778c59de7222f1caa7281"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.8.1"
+click = ">=8.1.2"
+msgpack = ">=1.0.3"
+textual = ">=0.29.0"
+typing-extensions = ">=4.4.0,<5.0.0"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1701,4 +1719,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "7a31634df72444c008ae18a0adfeb726a2e73ff27b703d081243c235a98c3799"
+content-hash = "eb46eca9585060f0fbbc4283c3a21c5bfd708bafdd2e6d1729261bec9d6a6f78"
