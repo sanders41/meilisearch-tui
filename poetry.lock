@@ -790,13 +790,13 @@ files = [
 
 [[package]]
 name = "meilisearch-python-async"
-version = "1.4.4"
+version = "1.4.5"
 description = "A Python async client for the Meilisearch API"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "meilisearch_python_async-1.4.4-py3-none-any.whl", hash = "sha256:51ef29a8c0595d20fc30ec1e5cdc6bb533a62d29c155e70aa875eadec028c567"},
-    {file = "meilisearch_python_async-1.4.4.tar.gz", hash = "sha256:b9f07de1fb1cac929ed62362ff001d90a339ea32a42ec77362a507e90906084a"},
+    {file = "meilisearch_python_async-1.4.5-py3-none-any.whl", hash = "sha256:d46c2206c1e1bda6bdbcaf74030e335c408671b52aa353704f095c87c41feef7"},
+    {file = "meilisearch_python_async-1.4.5.tar.gz", hash = "sha256:d29d5d1f9301f1da80660483a4846e6ec66138cc7d1c758303405eef43b04414"},
 ]
 
 [package.dependencies]
@@ -1678,4 +1678,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "6fc9602ff6f2082d288c5bd5ca954f88affee4224c8262ce70335ce020e8a275"
+content-hash = "130598376b8ba13707a6b80deaa4786ba97bf8a5a4adea7aca91980a1d1d07e9"
