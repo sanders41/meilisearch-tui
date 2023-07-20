@@ -27,7 +27,7 @@ uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 aiocache = "0.12.1"
 
 [tool.poetry.group.dev.dependencies]
-aiohttp = "3.8.4"
+aiohttp = "3.8.5"
 black = "23.7.0"
 click = "8.1.6"
 msgpack = "1.0.5"
