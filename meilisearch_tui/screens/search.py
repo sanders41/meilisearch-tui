@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from functools import cached_property
 
-from aiocache import cached
 from meilisearch_python_async.errors import MeilisearchCommunicationError
 from meilisearch_python_async.models.search import SearchResults
 from textual import events
@@ -127,7 +126,6 @@ class SearchScreen(Screen):
             self.search_input.value = ""
             self.search_input.focus()
 
-    @cached(ttl=10)
     async def search(self, search: str) -> None:
         if not self.selected_index and search == self.search_input.value:
             self.results.update("Error: No index provided")
