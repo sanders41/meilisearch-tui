@@ -21,7 +21,7 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.8"
-meilisearch-python-async = "1.6.2"
+meilisearch-python-async = "1.7.0"
 textual = "0.35.1"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 
