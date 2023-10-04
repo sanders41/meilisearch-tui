@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from meilisearch_python_async.errors import MeilisearchCommunicationError
+from meilisearch_python_sdk.errors import MeilisearchCommunicationError
 from textual.app import ComposeResult
 from textual.widgets import Label, ListItem, ListView
 

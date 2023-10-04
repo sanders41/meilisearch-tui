@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from meilisearch_python_async.index import Index
+from meilisearch_python_sdk.index import AsyncIndex
 
 from meilisearch_tui.client import get_client
 
@@ -21,7 +21,7 @@ async def get_current_indexes_string() -> str:
     return index_info
 
 
-async def get_indexes() -> list[Index] | None:
+async def get_indexes() -> list[AsyncIndex] | None:
     async with get_client() as client:
         indexes = await client.get_indexes()
 

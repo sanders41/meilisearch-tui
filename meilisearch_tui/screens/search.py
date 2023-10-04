@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from functools import cached_property
 
-from meilisearch_python_async.errors import MeilisearchCommunicationError
-from meilisearch_python_async.models.search import SearchResults
+from meilisearch_python_sdk.errors import MeilisearchCommunicationError
+from meilisearch_python_sdk.models.search import SearchResults
 from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, VerticalScroll

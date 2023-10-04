@@ -5,11 +5,11 @@ import json
 from functools import cached_property
 from pathlib import Path
 
-from meilisearch_python_async.errors import (
+from meilisearch_python_sdk.errors import (
     MeilisearchCommunicationError,
     MeilisearchError,
 )
-from meilisearch_python_async.models.settings import (
+from meilisearch_python_sdk.models.settings import (
     MeilisearchSettings as MeilisearchSettingsInfo,
 )
 from textual import events

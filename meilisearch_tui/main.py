@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from sys import platform
 
-from meilisearch_python_async.errors import MeilisearchCommunicationError
+from meilisearch_python_sdk.errors import MeilisearchCommunicationError
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.widgets import Footer
