@@ -4,8 +4,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from meilisearch_python_async import Client
-from meilisearch_python_async.task import wait_for_task
+from meilisearch_python_sdk import AsyncClient
 
 from meilisearch_tui.config import Config, load_config
 
@@ -72,7 +71,7 @@ def env_vars():
 
 @pytest.fixture
 async def test_client():
-    async with Client(BASE_URL, MASTER_KEY) as client:
+    async with AsyncClient(BASE_URL, MASTER_KEY) as client:
         yield client
 
 
@@ -83,7 +82,7 @@ async def clear_indexes(test_client):
     if indexes:
         for index in indexes:
             response = await test_client.index(index.uid).delete()
-            await wait_for_task(test_client, response.task_uid)
+            await test_client.wait_for_task(response.task_uid)
 
 
 @pytest.fixture
@@ -91,10 +90,10 @@ async def load_test_movie_data(test_client):
     root_path = Path().absolute()
     index = test_client.index("movies")
     result = await index.add_documents_from_file(root_path / "datasets" / "small_movies.json")
-    await wait_for_task(index.http_client, result.task_uid)
+    await test_client.wait_for_task(result.task_uid)
     yield
     indexes = await test_client.get_indexes()
     if indexes:
         for index in indexes:
             response = await test_client.index(index.uid).delete()
-            await wait_for_task(test_client, response.task_uid)
+            await test_client.wait_for_task(response.task_uid)
