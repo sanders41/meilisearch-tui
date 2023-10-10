@@ -22,12 +22,12 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.8"
-meilisearch-python-async = "1.8.0"
+meilisearch-python-sdk = "2.0.1"
 textual = "0.38.1"
 uvloop = {version = "0.17.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
-aiohttp = "3.8.5"
+aiohttp = "3.8.6"
 black = "23.9.1"
 click = "8.1.7"
 msgpack = "1.0.7"
@@ -36,7 +36,7 @@ pre-commit = "3.4.0"
 pytest = "7.4.2"
 pytest-asyncio = "0.21.1"
 pytest-cov = "4.1.0"
-ruff = "0.0.291"
+ruff = "0.0.292"
 textual-dev = "1.2.1"
 
 [build-system]
