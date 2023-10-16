@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python
     - name: Install Poetry
       run: |
         pipx install poetry
-      uses: actions/setup-python@v4
-      with:
-        python-version: "3.8"
-        cache: "poetry"
     - name: Configure poetry
       run: |
         poetry config virtualenvs.create true
         poetry config virtualenvs.in-project true
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.8"
+        cache: "poetry"
     - name: Install Dependencies
       run: poetry install
     - name: mypy check
@@ -37,18 +37,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
     - name: Install Poetry
       run: |
         pipx install poetry
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: "poetry"
     - name: Configure poetry
       run: |
         poetry config virtualenvs.create true
         poetry config virtualenvs.in-project true
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: "poetry"
     - name: Install Dependencies
       run: poetry install
     - name: MeiliSearch (latest version) setup with Docker
@@ -65,18 +65,18 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python ${{ matrix.python-version }}
     - name: Install Poetry
       run: |
         pipx install poetry
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-version }}
-        cache: "poetry"
     - name: Configure poetry
       run: |
         poetry config virtualenvs.create true
         poetry config virtualenvs.in-project true
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: "poetry"
     - name: Install Dependencies
       run: poetry install
     - name: Test with pytest
