@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from sys import platform
+import asyncio
+import sys
 
 from meilisearch_python_sdk.errors import MeilisearchCommunicationError
 from textual.app import App, ComposeResult
@@ -17,7 +18,7 @@ from meilisearch_tui.widgets.messages import ErrorMessage
 
 
 def _is_uvloop_platform() -> bool:  # pragma: no cover
-    if platform != "win32":
+    if sys.platform != "win32":
         return True
     return False
 
@@ -72,14 +73,24 @@ class MeilisearchApp(App):
             self.dark = False
 
 
+def run_app() -> None:
+    app = MeilisearchApp()
+    app.run()
+
+
 def main() -> int:
     if _is_uvloop_platform():  # pragma: no cover
         import uvloop
 
-        uvloop.install()
+        if sys.version_info >= (3, 11):
+            with asyncio.Runner(loop_factory=uvloop.new_event_loop) as runner:  # type: ignore
+                runner.run(run_app())  # type: ignore
 
-    app = MeilisearchApp()
-    app.run()
+        else:
+            uvloop.install()
+            asyncio.run(run_app())
+    else:
+        run_app()
 
     return 0
 
