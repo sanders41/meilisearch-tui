@@ -87,8 +87,8 @@ def main() -> int:
                 runner.run(run_app())  # type: ignore
 
         else:
-            uvloop.install()
-            asyncio.run(run_app())
+            uvloop.install()  # type: ignore
+            asyncio.run(run_app())  # type: ignore
     else:
         run_app()
 
