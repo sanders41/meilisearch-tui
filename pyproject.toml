@@ -84,7 +84,6 @@ minversion = "6.0"
 addopts = "--cov=meilisearch_tui --cov-report term-missing --meilisearch-master-key masterKey"
 markers = ["meilisearch"]
 asyncio_mode = "auto"
-meilisearch_clear_indexes = "async"
 
 [tool.coverage.report]
 exclude_lines = ["if __name__ == .__main__.:", "pragma: no cover"]

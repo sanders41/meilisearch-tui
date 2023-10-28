@@ -12,6 +12,16 @@ BASE_URL = "http://127.0.0.1:7700"
 MASTER_KEY = "masterKey"
 
 
+@pytest.fixture
+async def clear_indexes(async_client):
+    yield
+    indexes = await async_client.get_indexes()
+    if indexes:
+        for index in indexes:
+            response = await async_client.index(index.uid).delete()
+            await async_client.wait_for_task(response.task_uid)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def event_loop():
     try:
