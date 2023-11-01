@@ -1,4 +1,3 @@
-import asyncio
 import json
 import os
 from pathlib import Path
@@ -10,16 +9,6 @@ from meilisearch_tui.config import Config, load_config
 
 BASE_URL = "http://127.0.0.1:7700"
 MASTER_KEY = "masterKey"
-
-
-@pytest.fixture(scope="session", autouse=True)
-def event_loop():
-    try:
-        loop = asyncio.get_running_loop()
-    except RuntimeError:
-        loop = asyncio.new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture(autouse=True)
