@@ -1298,13 +1298,13 @@ testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtuale
 
 [[package]]
 name = "pytest-meilisearch"
-version = "0.2.1"
+version = "0.3.1"
 description = "Pytest helpers for testing projects using Meilisearch"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "pytest_meilisearch-0.2.1-py3-none-any.whl", hash = "sha256:766e69e02388c12e99779664dd54fe2dcc7949f0fdaf4d26aa7164842d954543"},
-    {file = "pytest_meilisearch-0.2.1.tar.gz", hash = "sha256:59d9ac0b5d11899a0982305db1c84cc796235020709422901d89aac6c02eae75"},
+    {file = "pytest_meilisearch-0.3.1-py3-none-any.whl", hash = "sha256:ce04f6e3eb9e4c7d97678c3c4eba85c8947a95f05c31df96044cdab2a99617ba"},
+    {file = "pytest_meilisearch-0.3.1.tar.gz", hash = "sha256:e3f8355d7c0c2789215c2ad475392a88bcfb2d6ea9703c3147861ee2c87f587a"},
 ]
 
 [package.dependencies]
@@ -1685,4 +1685,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "fb086d1dcb3999d18d6e8ed3a854602486c7b9bc152ad79d4cd91b84178822f3"
+content-hash = "3898a9a9ba52d2d60a5bafed6ec294421e4031075066fe7bd4102f3e977961c2"
