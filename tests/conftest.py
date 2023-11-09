@@ -4,7 +4,6 @@ from pathlib import Path
 from unittest.mock import patch
 
 import pytest
-from meilisearch_python_sdk import AsyncClient
 
 from meilisearch_tui.config import Config, load_config
 
@@ -70,30 +69,24 @@ def env_vars():
 
 
 @pytest.fixture
-async def test_client():
-    async with AsyncClient(BASE_URL, MASTER_KEY) as client:
-        yield client
-
-
-@pytest.fixture
-async def clear_indexes(test_client):
+async def tui_clear_indexes(async_client):
     yield
-    indexes = await test_client.get_indexes()
+    indexes = await async_client.get_indexes()
     if indexes:
         for index in indexes:
-            response = await test_client.index(index.uid).delete()
-            await test_client.wait_for_task(response.task_uid)
+            response = await async_client.index(index.uid).delete()
+            await async_client.wait_for_task(response.task_uid)
 
 
 @pytest.fixture
-async def load_test_movie_data(test_client):
+async def load_test_movie_data(async_client):
     root_path = Path().absolute()
-    index = test_client.index("movies")
+    index = async_client.index("movies")
     result = await index.add_documents_from_file(root_path / "datasets" / "small_movies.json")
-    await test_client.wait_for_task(result.task_uid)
+    await async_client.wait_for_task(result.task_uid)
     yield
-    indexes = await test_client.get_indexes()
+    indexes = await async_client.get_indexes()
     if indexes:
         for index in indexes:
-            response = await test_client.index(index.uid).delete()
-            await test_client.wait_for_task(response.task_uid)
+            response = await async_client.index(index.uid).delete()
+            await async_client.wait_for_task(response.task_uid)
