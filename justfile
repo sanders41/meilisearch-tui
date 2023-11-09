@@ -1,20 +1,19 @@
 @lint:
-  echo black
-  just --justfile {{justfile()}} black
   echo mypy
   just --justfile {{justfile()}} mypy
   echo ruff
   just --justfile {{justfile()}} ruff
-  echo fmt
-
-@black:
-  poetry run black meilisearch_tui tests
+  echo ruff-format
+  just --justfile {{justfile()}} ruff-format
 
 @mypy:
   poetry run mypy .
 
 @ruff:
   poetry run ruff check .
+
+@ruff-format:
+  poetry run ruff format meilisearch_tui tests
 
 @install:
   poetry install
