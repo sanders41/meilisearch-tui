@@ -27,7 +27,6 @@ uvloop = {version = "0.19.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
 aiohttp = "3.8.6"
-black = "23.11.0"
 click = "8.1.7"
 msgpack = "1.0.7"
 mypy = "1.6.1"
@@ -45,27 +44,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 meilisearch = "meilisearch_tui.__main__:main"
-
-[tool.black]
-line-length = 100
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.egg
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.nox
-  | \.tox
-  | \.venv
-  | \venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | setup.py
-)/
-'''
 
 [tool.mypy]
 check_untyped_defs = true
@@ -91,7 +69,24 @@ exclude_lines = ["if __name__ == .__main__.:", "pragma: no cover"]
 
 [tool.ruff]
 select = ["E", "F", "UP", "I001", "T201", "T203"]
-ignore = ["E501"]
+# Recommened ignores by ruff when using formatter
+ignore = [
+  "E501",
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "COM812",
+  "COM819",
+  "ISC001",
+  "ISC002",
+]
 line-length = 100
 target-version = "py38"
 fix = true
