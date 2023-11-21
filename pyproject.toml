@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "meilisearch-tui"
-version = "0.8.2"
+version = "0.8.3"
 description = "A TUI for Managing and Searching with Meilisearch"
 authors = ["Paul Sanders <psanders1@gmail.com>"]
 license = "MIT"
@@ -22,19 +22,18 @@ classifiers=[
 
 [tool.poetry.dependencies]
 python = "^3.8"
-meilisearch-python-sdk = "2.1.0"
+meilisearch-python-sdk = "2.2.0"
 textual = "0.41.0"
 uvloop = {version = "0.19.0", markers = "sys_platform != 'win32'"}
 
 [tool.poetry.group.dev.dependencies]
-black = "23.11.0"
-mypy = "1.6.1"
+mypy = "1.7.0"
 pre-commit = "3.5.0"
 pytest = "7.4.3"
 pytest-asyncio = "0.21.1"
 pytest-cov = "4.1.0"
 pytest-meilisearch = "0.3.2"
-ruff = "0.1.5"
+ruff = "0.1.6"
 textual-dev = "1.2.1"
 
 [build-system]
@@ -43,27 +42,6 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 meilisearch = "meilisearch_tui.__main__:main"
-
-[tool.black]
-line-length = 100
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.egg
-  | \.git
-  | \.hg
-  | \.mypy_cache
-  | \.nox
-  | \.tox
-  | \.venv
-  | \venv
-  | _build
-  | buck-out
-  | build
-  | dist
-  | setup.py
-)/
-'''
 
 [tool.mypy]
 check_untyped_defs = true
@@ -89,7 +67,24 @@ exclude_lines = ["if __name__ == .__main__.:", "pragma: no cover"]
 
 [tool.ruff]
 select = ["E", "F", "UP", "I001", "T201", "T203"]
-ignore = ["E501"]
+# Recommened ignores by ruff when using formatter
+ignore = [
+  "E501",
+  "W191",
+  "E111",
+  "E114",
+  "E117",
+  "D206",
+  "D300",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "COM812",
+  "COM819",
+  "ISC001",
+  "ISC002",
+]
 line-length = 100
 target-version = "py38"
 fix = true
