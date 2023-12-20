@@ -1282,20 +1282,20 @@ syntax = ["tree-sitter (>=0.20.1,<0.21.0)", "tree_sitter_languages (>=1.7.0)"]
 
 [[package]]
 name = "textual-dev"
-version = "1.2.1"
+version = "1.3.0"
 description = "Development tools for working with Textual"
 optional = false
-python-versions = ">=3.7,<4.0"
+python-versions = ">=3.8,<4.0"
 files = [
-    {file = "textual_dev-1.2.1-py3-none-any.whl", hash = "sha256:a96ff43841cadf853dd689d68c2fc920a23ad71cfa9a33917ca53e96d1cc81f3"},
-    {file = "textual_dev-1.2.1.tar.gz", hash = "sha256:0bda11adfc541e0cc9e49bdf37a8b852281dc2387bb6ff3d01f40c7a3f841684"},
+    {file = "textual_dev-1.3.0-py3-none-any.whl", hash = "sha256:e2eadbc516c9ec96789a621d05ce7fbf9fbaa008cb5654932f9a01776b408d9f"},
+    {file = "textual_dev-1.3.0.tar.gz", hash = "sha256:4e9d3a0cf18e6ae299e8b2d89e81e25cccacc5c8f0e3b0e2915fd17695bd583e"},
 ]
 
 [package.dependencies]
 aiohttp = ">=3.8.1"
 click = ">=8.1.2"
 msgpack = ">=1.0.3"
-textual = ">=0.33.0"
+textual = ">=0.36.0"
 typing-extensions = ">=4.4.0,<5.0.0"
 
 [[package]]
@@ -1504,4 +1504,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "53b9406415cff6aab000dc0df50f43690e7806c1c24a4a4c185f04d65c7d3261"
+content-hash = "5a833992c224f1822c37820965d101e9a7c164d5ac0b1f8f8b450a6ee40c0f08"
