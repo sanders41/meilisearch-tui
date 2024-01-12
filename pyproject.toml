@@ -33,7 +33,7 @@ pytest = "7.4.4"
 pytest-asyncio = "0.23.3"
 pytest-cov = "4.1.0"
 pytest-meilisearch = "0.3.3"
-ruff = "0.1.11"
+ruff = "0.1.12"
 textual-dev = "1.4.0"
 
 [build-system]
