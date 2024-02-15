@@ -69,24 +69,24 @@ def env_vars():
 
 
 @pytest.fixture
-async def tui_clear_indexes(async_client):
+async def tui_clear_indexes(async_meilisearch_client):
     yield
-    indexes = await async_client.get_indexes()
+    indexes = await async_meilisearch_client.get_indexes()
     if indexes:
         for index in indexes:
-            response = await async_client.index(index.uid).delete()
-            await async_client.wait_for_task(response.task_uid)
+            response = await async_meilisearch_client.index(index.uid).delete()
+            await async_meilisearch_client.wait_for_task(response.task_uid)
 
 
 @pytest.fixture
-async def load_test_movie_data(async_client):
+async def load_test_movie_data(async_meilisearch_client):
     root_path = Path().absolute()
-    index = async_client.index("movies")
+    index = async_meilisearch_client.index("movies")
     result = await index.add_documents_from_file(root_path / "datasets" / "small_movies.json")
-    await async_client.wait_for_task(result.task_uid)
+    await async_meilisearch_client.wait_for_task(result.task_uid)
     yield
-    indexes = await async_client.get_indexes()
+    indexes = await async_meilisearch_client.get_indexes()
     if indexes:
         for index in indexes:
-            response = await async_client.index(index.uid).delete()
-            await async_client.wait_for_task(response.task_uid)
+            response = await async_meilisearch_client.index(index.uid).delete()
+            await async_meilisearch_client.wait_for_task(response.task_uid)

@@ -19,9 +19,9 @@ from meilisearch_tui.utils import get_current_indexes_string, string_to_list
 )
 @pytest.mark.usefixtures("tui_clear_indexes", "mock_config", "env_vars")
 @pytest.mark.meilisearch
-async def test_get_current_indexes_string(indexes, expected, async_client):
+async def test_get_current_indexes_string(indexes, expected, async_meilisearch_client):
     for index in indexes:
-        await async_client.create_index(index[0], index[1])
+        await async_meilisearch_client.create_index(index[0], index[1])
 
     result = await get_current_indexes_string()
 
