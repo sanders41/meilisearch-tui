@@ -141,6 +141,7 @@ class SearchScreen(Screen):
                 results = await index.search(
                     self.search_input.value,
                     limit=self.limit,
+                    opt_params={"hybrid": {"semanticRatio": 1.0, "embedder": "default"}},
                     attributes_to_highlight=["*"],
                     highlight_pre_tag="***",
                     highlight_post_tag="***",
