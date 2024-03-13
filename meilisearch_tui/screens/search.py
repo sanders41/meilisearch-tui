@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import cached_property
 
 from meilisearch_python_sdk.errors import MeilisearchCommunicationError
-from meilisearch_python_sdk.models.search import SearchResults
+from meilisearch_python_sdk.models.search import Hybrid, SearchResults
 from textual import events
 from textual.app import ComposeResult
 from textual.containers import Center, VerticalScroll
@@ -11,15 +11,23 @@ from textual.screen import Screen
 from textual.widgets import Button, Footer, Input, Markdown, Static
 
 from meilisearch_tui.client import get_client
+from meilisearch_tui.config import load_config
 from meilisearch_tui.widgets.index_sidebar import IndexSidebar
 from meilisearch_tui.widgets.messages import ErrorMessage
 
 
 class SearchScreen(Screen):
+    hybrid_search = False
+
     def __init__(self) -> None:
         super().__init__()
         self.limit = 20
         self.selected_index: str | None = None
+
+        if self.hybrid_search:
+            config = load_config()
+            self.semantic_ratio = config.semantic_ratio if config.semantic_ratio else 0.5
+            self.embedder = config.embedder
 
     def compose(self) -> ComposeResult:
         yield ErrorMessage("", classes="message-centered", id="generic-error")
@@ -138,13 +146,23 @@ class SearchScreen(Screen):
         async with get_client() as client:
             index = client.index(self.selected_index)
             try:
-                results = await index.search(
-                    self.search_input.value,
-                    limit=self.limit,
-                    attributes_to_highlight=["*"],
-                    highlight_pre_tag="***",
-                    highlight_post_tag="***",
-                )
+                if self.hybrid_search:
+                    results = await index.search(
+                        self.search_input.value,
+                        limit=self.limit,
+                        attributes_to_highlight=["*"],
+                        highlight_pre_tag="***",
+                        highlight_post_tag="***",
+                        hybrid=Hybrid(semantic_ratio=self.semantic_ratio, embedder=self.embedder),
+                    )
+                else:
+                    results = await index.search(
+                        self.search_input.value,
+                        limit=self.limit,
+                        attributes_to_highlight=["*"],
+                        highlight_pre_tag="***",
+                        highlight_post_tag="***",
+                    )
 
             except Exception as e:
                 if search == self.search_input.value:

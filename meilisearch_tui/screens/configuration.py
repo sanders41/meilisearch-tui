@@ -14,6 +14,8 @@ from meilisearch_tui.widgets.messages import SuccessMessage
 
 
 class ConfigurationScreen(Screen):
+    hybrid_search = False
+
     def compose(self) -> ComposeResult:
         with Container(id="body"):
             yield InputWithLabel(
@@ -30,6 +32,21 @@ class ConfigurationScreen(Screen):
                 error_id="master-key-error",
                 password=True,
             )
+            if self.hybrid_search:
+                yield InputWithLabel(
+                    label="Semantic Ratio",
+                    input_id="semantic-ratio",
+                    input_placeholder="Semantic ratio for hybrid search",
+                    error_id="semantic-ratio-error",
+                    error_message="Semantic ratio must be a float between 0.0 and 1.0",
+                )
+                yield InputWithLabel(
+                    label="Embedder",
+                    input_id="embedder",
+                    input_placeholder="Embedder to use for hybrid search",
+                    error_id="embedder-error",
+                    error_message="An embedder is required",
+                )
             yield Label("Dark Theme (restart required for change to take affect)")
             yield Switch(value=True, id="theme")
             with Center():
@@ -44,6 +61,7 @@ class ConfigurationScreen(Screen):
 
     async def on_button_pressed(self, event: Button.Pressed) -> None:
         button_id = event.button.id
+        is_error = False
 
         if button_id == "save-setting-button":
             server_url = self.query_one("#server-url", Input).value
@@ -61,9 +79,33 @@ class ConfigurationScreen(Screen):
             else:
                 config.theme = Theme.LIGHT
 
+            if self.hybrid_search:
+                try:
+                    semantic_ratio_str = self.query_one("#semantic-ratio", Input).value
+                    if semantic_ratio_str == "":
+                        raise ValueError("A semantic ratio is required for hybrid search")
+                    semantic_ratio = float(semantic_ratio_str)
+                    if semantic_ratio < 0.0 or semantic_ratio > 1.0:
+                        raise ValueError("Semantic ratio must be between 0.0 and 1.0")
+                    config.semantic_ratio = semantic_ratio
+                except Exception:
+                    self.query_one("#semantic-ratio-error", Static).visible = True
+                    is_error = True
+
+                embedder = self.query_one("#embedder", Input).value
+                try:
+                    if embedder == "":
+                        raise ValueError("An embedder is required for hybrid search")
+                    config.embedder = embedder
+                except Exception:
+                    self.query_one("#embedder-error", Static).visible = True
+                    is_error = True
+
             if not config.meilisearch_url:
                 self.query_one("#server-url-error", Static).visible = True
-            else:
+                is_error = True
+
+            if not is_error:
                 try:
                     config.save()
                     await self._success_message()
@@ -102,6 +144,19 @@ class ConfigurationScreen(Screen):
             theme_switch.value = True
         else:
             theme_switch.value = False
+
+        if self.hybrid_search:
+            semantic_ratio = self.query_one("#semantic-ratio", Input)
+            if config.semantic_ratio:
+                semantic_ratio.value = str(config.semantic_ratio)
+            else:
+                semantic_ratio.value = "0.5"
+
+            embedder = self.query_one("#embedder", Input)
+            if config.embedder:
+                embedder.value = config.embedder
+            else:
+                embedder.value = "default"
 
     async def _success_message(self) -> None:
         success = self.query_one("#save-successful", Static)
