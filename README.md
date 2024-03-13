@@ -33,6 +33,13 @@ Start the TUI by running
 meilisearch
 ```
 
+If you are using Meilisearch v1.7.0+ you can optionally use hybrid search by starting by passing
+the `-h` or `--hybrid-search` flag.
+
+```sh
+meilisearch -h
+```
+
 The first time you start the app you will need to enter the server address and master key (if using
 one) into the configuration. If the `MEILI_HTTP_ADDR` and/or `MEILI_MASTER_KEY` environment variables
 are set, these values will be used for the `meilisearch_url` and `master_key`.
