@@ -34,6 +34,8 @@ class Config:
         *,
         timeout: int | None = None,
         theme: Theme = Theme.DARK,
+        semantic_ratio: float | None = None,
+        embedder: str | None = None,
         config_dir: Path | None = None,
     ) -> None:
         self.config_dir = config_dir or Config.get_default_directory()
@@ -44,6 +46,8 @@ class Config:
         self._meilisearch_master_key_env_var = False
         self.timeout = timeout
         self.theme = theme
+        self.semantic_ratio = semantic_ratio
+        self.embedder = embedder
 
     def delete(self) -> None:
         if self.settings_file.exists():
@@ -65,6 +69,8 @@ class Config:
             self.timeout = settings.get("timeout", None)
             saved_theme = settings.get("theme", "dark")
             self.theme = Theme.DARK if saved_theme == "dark" else Theme.LIGHT
+            self.semantic_ratio = settings.get("semantic_ratio")
+            self.embedder = settings.get("embedder")
 
         if os.getenv("MEILI_HTTP_ADDR", None):
             self.meilisearch_url = os.getenv("MEILI_HTTP_ADDR")
@@ -95,6 +101,12 @@ class Config:
 
         if self.theme:
             settings["theme"] = self.theme.value
+
+        if self.semantic_ratio:
+            settings["semantic_ratio"] = self.semantic_ratio
+
+        if self.embedder:
+            settings["embedder"] = self.embedder
 
         if settings:
             with open(self.settings_file, "w") as f:
