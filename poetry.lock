@@ -1283,13 +1283,13 @@ files = [
 
 [[package]]
 name = "textual"
-version = "0.47.1"
+version = "0.63.6"
 description = "Modern Text User Interface framework"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "textual-0.47.1-py3-none-any.whl", hash = "sha256:da79df2e138f6de51bda84a1ee1460936bb2ecf5527ca2d47b9b59c584323327"},
-    {file = "textual-0.47.1.tar.gz", hash = "sha256:4b82e317884bb1092f693f474c319ceb068b5a0b128b121f1aa53a2d48b4b80c"},
+    {file = "textual-0.63.6-py3-none-any.whl", hash = "sha256:7cf6c320b7445bcab42360d3957ed5b14163f8687fad282d772e2af6407ea3a1"},
+    {file = "textual-0.63.6.tar.gz", hash = "sha256:cac575e60fe8b376bed3d6ac1723c137cea69f3e48cecdc78b289da10de7f9e5"},
 ]
 
 [package.dependencies]
@@ -1298,7 +1298,7 @@ rich = ">=13.3.3"
 typing-extensions = ">=4.4.0,<5.0.0"
 
 [package.extras]
-syntax = ["tree-sitter (>=0.20.1,<0.21.0)", "tree_sitter_languages (>=1.7.0)"]
+syntax = ["tree-sitter (>=0.20.1,<0.21.0)", "tree-sitter-languages (==1.10.2)"]
 
 [[package]]
 name = "textual-dev"
@@ -1541,4 +1541,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "634b97dd0de7f740e8b0722e03c8144cfa634ead315e5fd85f0f1c831870e9ad"
+content-hash = "9dbeabea8b92555be00e3e033c1a5cf22f9f341b6f55ffef64a1a71f57057492"
